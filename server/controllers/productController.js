@@ -39,6 +39,39 @@ const createProduct = async (req, res, next) => {
   }
 };
 
+const updateProduct = async (req, res, next) => {
+  try {
+    let product = await Product.findById(req.params.id);
+
+    if (!product) {
+      return next(new ErrorHander("Product not found", 404));
+    }
+    let pics = [];
+    req.files.map((item) => {
+      pics.push(item.filename);
+    });
+    if (product.pictures !== 0) {
+      req.body.pictures = pics;
+    }
+
+    const updatedproduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true, useFindAndModify: false }
+    );
+    return res.status(200).json({
+      success: true,
+      message: "product update successfully",
+      updatedproduct,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "internal server error",
+    });
+  }
+};
 module.exports = {
   createProduct,
+  updateProduct,
 };
