@@ -21,7 +21,7 @@ const createProduct = async (req, res, next) => {
     }
 
     const productLength = await Product.find({});
-    console.log(productLength, "prict--------");
+
     const product = await Product.create(req.body);
     return res.status(200).json({
       success: true,
@@ -40,9 +40,12 @@ const createProduct = async (req, res, next) => {
 
 const getAllProducts = async (req, res, next) => {
   try {
+    const resultPerPage = 5;
+    const productCount = await Product.countDocuments();
     const apiFeature = new ApiFeatures(Product.find(), req.query)
       .search()
-      .filter();
+      .filter()
+      .pagination(resultPerPage);
     // const allProducts = await Product.find();
     let allProducts = await apiFeature.query;
     if (!allProducts) {
@@ -55,6 +58,7 @@ const getAllProducts = async (req, res, next) => {
       success: true,
       message: "products found",
       allProducts,
+      productCount,
     });
   } catch (error) {
     return next(error);

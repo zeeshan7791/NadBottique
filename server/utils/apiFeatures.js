@@ -32,6 +32,12 @@ class ApiFeatures {
 
     return this;
   }
+  pagination(resultPerPage) {
+    const currentPage = Number(this.queryStr.page) || 1;
+    const skipProducts = resultPerPage * (currentPage - 1);
+    this.query = this.query.limit(resultPerPage).skip(skipProducts);
+    return this;
+  }
 }
 
 module.exports = ApiFeatures;
