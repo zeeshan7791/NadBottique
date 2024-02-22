@@ -5,13 +5,12 @@ const errorHandler = require("../utils/error");
 // admin create Product
 const createProduct = async (req, res, next) => {
   try {
-    console.log(req.body, "value in req.body");
+    req.body.user = req.user.id;
     let pics = [];
     req.files.map((item) => {
       pics.push(item.filename);
     });
     req.body.pictures = pics;
-    console.log(req.body.pictures);
 
     const count = await Product.countDocuments();
     let productId = count + 1;
@@ -68,7 +67,7 @@ const getAllProducts = async (req, res, next) => {
 
 const getSingleProduct = async (req, res, next) => {
   const singleProduct = await Product.findById(req.params.id);
-  console.log(singleProduct, "value in single product------");
+
   if (!singleProduct) {
     return next(errorHandler(404, "product does not found"));
   }
@@ -119,7 +118,7 @@ const updateProduct = async (req, res, next) => {
 // admin delete-Product
 const deleteProduct = async (req, res, next) => {
   const findProduct = await Product.findById(req.params.id);
-  console.log(findProduct);
+
   if (!findProduct) {
     return next(errorHandler(404, "product does not found"));
   }
