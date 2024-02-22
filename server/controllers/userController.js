@@ -1,9 +1,9 @@
 const User = require("../Models/userModel");
 const errorHandler = require("../utils/error");
 const bcryptjs = require("bcryptjs");
+const sendToken = require("../utils/token");
 // register user
 const registerUser = async (req, res, next) => {
-  console.log("hello");
   const { email, phone, password } = req.body;
   const userExist = await User.findOne({ $or: [{ email }, { phone }] });
   if (userExist) {
@@ -20,21 +20,15 @@ const registerUser = async (req, res, next) => {
   req.body.password = hashedPassword;
   try {
     const user = await User.create(req.body);
-    const token = await user.getJWTToken();
-    return res.status(200).json({
-      success: true,
-      message: "user register successfully",
-      token,
-    });
+    sendToken(user, 201, "register successfully", res);
   } catch (error) {
     return next(error);
   }
 };
 
 const loginUser = async (req, res, next) => {
-  console.log("hello");
   const { email, password } = req.body;
-  console.log(email, password);
+
   if (!email || !password) {
     return next(errorHandler(400, "Please enter email and password"));
   }
@@ -48,12 +42,24 @@ const loginUser = async (req, res, next) => {
     if (!isPasswordMatch) {
       return next(errorHandler(401, "invalid email or password"));
     }
-    return res.status(200).json({
-      success: true,
-      message: "user login successfully",
-    });
+    sendToken(user, 200, "login successfully", res);
   } catch (error) {
     next(error);
   }
 };
-module.exports = { registerUser, loginUser };
+
+const logoutUser = async (req, res, next) => {
+  try {
+    res.cookie("token", null, {
+      expires: new Date(Date.now()),
+      httpOnly: true,
+    });
+    return res.status(200).json({
+      success: true,
+      message: "User logout successfully",
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+module.exports = { registerUser, loginUser, logoutUser };
