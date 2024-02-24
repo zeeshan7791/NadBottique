@@ -2,6 +2,8 @@ const User = require("../Models/userModel");
 const errorHandler = require("../utils/error");
 const bcryptjs = require("bcryptjs");
 const sendToken = require("../utils/token");
+const sendEmail = require("../utils/sendEmail");
+const crypto = require("crypto");
 // register user
 const registerUser = async (req, res, next) => {
   const { email, phone, password } = req.body;
@@ -62,4 +64,72 @@ const logoutUser = async (req, res, next) => {
     return next(error);
   }
 };
-module.exports = { registerUser, loginUser, logoutUser };
+const forgetPassword = async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return next(errorHandler(401, "User not found"));
+  }
+  const resetToken = user.getResetPasswordToken();
+  await user.save({ validateBeforeSave: false });
+  const resetPasswordURL = `${req.protocol}://${req.get(
+    "host"
+  )}/api/v1/password/${resetToken}`;
+  const message = `Your Password reset token is :- \n\n ${resetPasswordURL}\n\n if you have not requested this email then please ignore it.`;
+
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: "Nadboutique password recovery",
+      message,
+    });
+    return res.status(200).json({
+      success: true,
+      message: `message sent to ${user.email} successfully`,
+    });
+  } catch (error) {
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save({ validateBeforeSave: false });
+    next(error);
+  }
+};
+
+const resetPassword = async (req, res, next) => {
+  //creating token hash
+  const resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+  try {
+    const user = await User.findOne({
+      resetPasswordToken,
+      resetPasswordExpire: { $gt: Date.now() },
+    });
+    if (!user) {
+      return next(
+        errorHandler(400, "reset password token is ivalid or has been expired")
+      );
+    }
+    if (req.body.password !== req.body.confirmPassword) {
+      return next(errorHandler(400, "password does not match"));
+    }
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save();
+    sendToken(user, 200, res);
+    return res.status(200).json({
+      success: true,
+      message: "password changed successfully",
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+module.exports = {
+  registerUser,
+  loginUser,
+  logoutUser,
+  forgetPassword,
+  resetPassword,
+};
