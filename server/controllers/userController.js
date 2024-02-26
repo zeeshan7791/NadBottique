@@ -41,6 +41,7 @@ const loginUser = async (req, res, next) => {
       return next(errorHandler(401, "invalid email or password"));
     }
     const isPasswordMatch = await user.comparePassword(password);
+
     if (!isPasswordMatch) {
       return next(errorHandler(401, "invalid email or password"));
     }
@@ -126,10 +127,71 @@ const resetPassword = async (req, res, next) => {
     return next(error);
   }
 };
+const updateUser = async (req, res, next) => {
+  const user = await User.findOne({ _id: req.params.id });
+  if (!user) {
+    return next(errorHandler(401, "user not found"));
+  }
+  if (user._id !== req.params.id) {
+    return next(errorHandler(401, "You can only get your own details"));
+  }
+  try {
+    return res.status(200).json({
+      success: true,
+      message: "user detailed fetched successfully",
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+const getUserDetails = async (req, res, next) => {
+  const user = await User.findById(req.user.id);
+  if (!user) {
+    return next(errorHandler(401, "user not found"));
+  }
+
+  try {
+    return res.status(200).json({
+      success: true,
+      message: "user detailed fetched successfully",
+      user,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+const updatePassword = async (req, res, next) => {
+  try {
+    console.log("hello");
+    const user = await User.findById(req.user.id).select("+password"); // Corrected method from findByIdAndUpdate to findById
+
+    const isPasswordMatched = await user.comparePassword(req.body.oldPassword);
+
+    if (!isPasswordMatched) {
+      return next(errorHandler(400, "Old password is incorrect"));
+    }
+
+    if (req.body.newPassword !== req.body.confirmPassword) {
+      return next(errorHandler(400, "Passwords do not match")); // Corrected error message
+    }
+    const hashedPassword = await bcryptjs.hash(req.body.newPassword, 10); // Corrected to await bcryptjs.hash
+    console.log(hashedPassword, "value in HashPassword");
+    user.password = hashedPassword;
+
+    await user.save();
+
+    sendToken(user, 200, "password updated successfully", res);
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   logoutUser,
   forgetPassword,
   resetPassword,
+  getUserDetails,
+  updatePassword,
 };
