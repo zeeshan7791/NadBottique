@@ -6,6 +6,8 @@ const {
   deleteProduct,
   getSingleProduct,
   createProductReview,
+  getAllReviews,
+  deleteReviews,
 } = require("../controllers/productController");
 const upload = require("../middleware/upload");
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
@@ -44,4 +46,10 @@ router.post(
 
   createProductReview
 );
+router.post(
+  "/reviews",
+
+  getAllReviews
+);
+router.delete("/reviews", deleteReviews);
 module.exports = router;
