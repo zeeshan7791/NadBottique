@@ -1,5 +1,4 @@
 import PropTypes from "prop-types";
-
 import Helmet from "react-helmet";
 const MetaData = ({ title }) => {
   return (
