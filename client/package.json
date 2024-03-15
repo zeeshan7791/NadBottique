@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.0.1",
     "axios": "^1.6.7",
     "helmet": "^7.1.0",
     "overlay-navbar": "^1.2.3",
@@ -23,6 +24,7 @@
     "react-router-dom": "^6.22.2",
     "redux": "^5.0.1",
     "redux-devtools-extension": "^2.13.9",
+    "redux-persist": "^6.0.0",
     "redux-thunk": "^3.1.0",
     "webfontloader": "^1.6.28"
   },

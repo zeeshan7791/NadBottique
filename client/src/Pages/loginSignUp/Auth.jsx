@@ -21,6 +21,7 @@ const LoginSignUp = () => {
 
   const loginSubmit = (e) => {
     e.preventDefault();
+    setUser();
   };
 
   const registerSubmit = (e) => {
