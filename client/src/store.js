@@ -3,9 +3,11 @@ import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import persistStore from "redux-persist/es/persistStore";
 import allProductsSlice from "./redux/products/allProductsSlice";
+import productDetailsSlice from "./redux/products/productDetailsSlice";
 
 const rootReducer = combineReducers({
   allProducts: allProductsSlice,
+  productDetails: productDetailsSlice,
 });
 const persistConfig = {
   key: "root",
