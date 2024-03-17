@@ -10,6 +10,7 @@ import {
 } from "@material-ui/core";
 import { Rating } from "@material-ui/lab";
 import "./ProductDetails.css";
+import ReviewCard from "./ReviewCard";
 const ProductDetails = () => {
   const { productDetails } = useSelector((state) => state.productDetails);
   console.log(productDetails, "productDetails");
@@ -83,18 +84,18 @@ const ProductDetails = () => {
         </div>
       </div>
       <h3 className="reviewsHeading">REVIEWS</h3>
-      <Dialog
+      {/* <Dialog
         aria-labelledby="simple-dialog-title"
         open={open}
         onClose={"submitReviewToggle"}
       >
         <DialogTitle>Submit Review</DialogTitle>
         <DialogContent className="submitDialog">
-          {/* <Rating
+          <Rating
             onChange={(e) => setRating(e.target.value)}
             value={rating}
             size="large"
-          /> */}
+          />
 
           <textarea
             className="submitDialogTextArea"
@@ -112,18 +113,19 @@ const ProductDetails = () => {
             Submit
           </Button>
         </DialogActions>
-      </Dialog>
-      {/* {productDetails.singleProduct.reviews &&
+      </Dialog> */}
+      {productDetails.singleProduct.reviews &&
       productDetails.singleProduct.reviews[0] ? (
         <div className="reviews">
           {productDetails.singleProduct.reviews &&
             productDetails.singleProduct.reviews.map((review) => (
-            //   <ReviewCard key={review._id} review={review} />
+              <ReviewCard key={review._id} review={review} />
             ))}
         </div>
       ) : (
         <p className="noReviews">No Reviews Yet</p>
-      )} */}
+      )}{" "}
+      *
     </>
   );
 };
