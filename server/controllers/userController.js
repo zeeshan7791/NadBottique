@@ -6,14 +6,16 @@ const sendEmail = require("../utils/sendEmail");
 const crypto = require("crypto");
 // register user
 const registerUser = async (req, res, next) => {
-  const { email, phone, password } = req.body;
-  const userExist = await User.findOne({ $or: [{ email }, { phone }] });
+  console.log(req.body);
+  const { email, password } = req.body;
+  const userExist = await User.findOne({ email });
+
   if (userExist) {
     return next(errorHandler(404, "user already exist"));
   }
   const pic = req.file ? req.file.filename : "";
   if (pic) {
-    req.body.profilePic = pic;
+    req.body.avatar = pic;
   }
   const count = await User.countDocuments();
   let userId = count + 1;

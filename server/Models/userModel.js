@@ -21,14 +21,14 @@ const userSchema = new mongoose.Schema(
       unique: true,
       validate: [validator.isEmail, "Please Enter a valid Email"],
     },
-    phone: {
-      type: String,
-      required: [true, "Please Enter your phone no"],
-      maxLength: [11, "number cannot exceed 11 characters"],
-      minLength: [11, "number cannot less than 11 characters"],
-      trim: true,
-      uniqure: true,
-    },
+    // phone: {
+    //   type: String,
+    //   required: [true, "Please Enter your phone no"],
+    //   maxLength: [11, "number cannot exceed 11 characters"],
+    //   minLength: [11, "number cannot less than 11 characters"],
+    //   trim: true,
+    //   uniqure: true,
+    // },
     // avatar: {
     //   public_id: {
     //     type: String,
@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema(
     //     required: true,
     //   },
     // },
-    profilePic: {
+    avatar: {
       type: Array,
       required: [true, "Please upload your profile image "],
     },
