@@ -15,7 +15,7 @@ const {
 const upload = require("../middleware/upload");
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
 const router = express.Router();
-router.post("/register", upload.single("profilePic"), registerUser);
+router.post("/register", upload.single("avatar"), registerUser);
 router.post("/login", loginUser);
 router.get("/logout", logoutUser);
 router.post("/forget/password", forgetPassword);
