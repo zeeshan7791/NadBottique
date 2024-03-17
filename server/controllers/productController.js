@@ -40,24 +40,28 @@ const createProduct = async (req, res, next) => {
 const getAllProducts = async (req, res, next) => {
   try {
     const resultPerPage = 5;
-    const productCount = await Product.countDocuments();
+    const productsCount = await Product.countDocuments();
     const apiFeature = new ApiFeatures(Product.find(), req.query)
       .search()
-      .filter()
-      .pagination(resultPerPage);
+      .filter();
+    let products = await apiFeature.query;
+    let filteredProductsCount = products.length;
+    apiFeature.pagination(resultPerPage);
     // const allProducts = await Product.find();
-    let allProducts = await apiFeature.query;
-    if (!allProducts) {
+    products = await apiFeature.query;
+    if (!products) {
       return res.status(401).json({
         success: true,
         message: "no products found",
       });
     }
-    return res.status(401).json({
+    return res.status(200).json({
       success: true,
-      message: "products found",
-      allProducts,
-      productCount,
+      message: "products fetched successfully",
+      products,
+      productsCount,
+      resultPerPage,
+      filteredProductsCount,
     });
   } catch (error) {
     return next(error);
@@ -67,7 +71,6 @@ const getAllProducts = async (req, res, next) => {
 
 const getSingleProduct = async (req, res, next) => {
   const singleProduct = await Product.findById(req.params.id);
-
   if (!singleProduct) {
     return next(errorHandler(404, "product does not found"));
   }
