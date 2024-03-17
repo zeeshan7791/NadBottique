@@ -1,8 +1,11 @@
 import { useRef, useState } from "react";
 import "./LoginSignUp.css";
-
+import MailOutlineIcon from "@material-ui/icons/MailOutline";
+import LockOpenIcon from "@material-ui/icons/LockOpen";
+import FaceIcon from "@material-ui/icons/Face";
 import { Link } from "react-router-dom";
-
+import profile from "../../assets/profile.png";
+import { toast } from "react-toastify";
 const LoginSignUp = () => {
   const loginTab = useRef(null);
   const registerTab = useRef(null);
@@ -18,14 +21,41 @@ const LoginSignUp = () => {
   });
 
   const { name, email, password } = user;
+  const [avatar, setAvatar] = useState(null);
 
   const loginSubmit = (e) => {
     e.preventDefault();
     setUser();
   };
-
-  const registerSubmit = (e) => {
+  const registerDataChange = (e) => {
+    if (e.target.name === "avatar") {
+      setUser({ ...user, [e.target.name]: e.target.value });
+      setAvatar(e.target.files[0]);
+    } else {
+      setUser({ ...user, [e.target.name]: e.target.value });
+    }
+  };
+  console.log(avatar);
+  const registerSubmit = async (e) => {
     e.preventDefault();
+    const signUpData = new FormData();
+    signUpData.append("name", name);
+    signUpData.append("email", email);
+    signUpData.append("password", password);
+    signUpData.append("avatar", avatar);
+
+    const res = await fetch("http://localhost:5000/api/user/register", {
+      method: "POST",
+      body: signUpData,
+    });
+    const data = await res.json();
+    console.log(data);
+    console.log(data);
+    if (data.success === false) {
+      toast.error(data.message);
+      return;
+    }
+    toast.success(data.message);
   };
 
   const switchTabs = (e, tab) => {
@@ -44,7 +74,7 @@ const LoginSignUp = () => {
       loginTab.current.classList.add("shiftToLeft");
     }
   };
-  const registerDataChange = () => {};
+
   return (
     <>
       <div className="LoginSignUpContainer">
@@ -58,6 +88,7 @@ const LoginSignUp = () => {
           </div>
           <form className="loginForm" ref={loginTab} onSubmit={loginSubmit}>
             <div className="loginEmail">
+              <MailOutlineIcon />
               <input
                 type="email"
                 placeholder="Email"
@@ -67,6 +98,7 @@ const LoginSignUp = () => {
               />
             </div>
             <div className="loginPassword">
+              <LockOpenIcon />
               <input
                 type="password"
                 placeholder="Password"
@@ -85,6 +117,7 @@ const LoginSignUp = () => {
             onSubmit={registerSubmit}
           >
             <div className="signUpName">
+              <FaceIcon />
               <input
                 type="text"
                 placeholder="Name"
@@ -95,6 +128,7 @@ const LoginSignUp = () => {
               />
             </div>
             <div className="signUpEmail">
+              <MailOutlineIcon />
               <input
                 type="email"
                 placeholder="Email"
@@ -105,6 +139,7 @@ const LoginSignUp = () => {
               />
             </div>
             <div className="signUpPassword">
+              <LockOpenIcon />
               <input
                 type="password"
                 placeholder="Password"
@@ -116,12 +151,17 @@ const LoginSignUp = () => {
             </div>
 
             <div id="registerImage">
-              <img src={"avatarPreview"} alt="Avatar Preview" />
+              {avatar ? (
+                <img src={URL.createObjectURL(avatar)} alt="Avatar Preview" />
+              ) : (
+                <img src={profile} alt="Avatar Preview" />
+              )}
+
               <input
                 type="file"
                 name="avatar"
                 accept="image/*"
-                onChange={"registerDataChange"}
+                onChange={registerDataChange}
               />
             </div>
             <input type="submit" value="Register" className="signUpBtn" />
