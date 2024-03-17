@@ -9,6 +9,8 @@ import Home from "./Pages/home/Home";
 import Footer from "./components/layout/footer/Footer";
 import LoginSignUp from "./Pages/loginSignUp/Auth";
 import ProductDetails from "./components/products/ProductDetails";
+import Products from "./Pages/product/Products";
+import Search from "./components/products/Search";
 
 const App = () => {
   useEffect(() => {
@@ -26,7 +28,10 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />}></Route>
           <Route path="/product/:id" element={<ProductDetails />}></Route>
-          <Route path="/auth" element={<LoginSignUp />}></Route>
+          <Route path="/products" element={<Products />}></Route>
+          <Route path="/products/:keyword" element={<Products />}></Route>
+          <Route path="/Search" element={<Search />}></Route>
+          <Route path="/login" element={<LoginSignUp />}></Route>
         </Routes>
         <Footer />
       </BrowserRouter>
