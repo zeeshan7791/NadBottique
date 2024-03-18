@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const path = require("path");
 const connectDB = require("./config/database");
 const dotenv = require("dotenv");
 const cors = require("cors");
@@ -19,6 +20,7 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 const port = process.env.PORT || 8000;
+app.use("/image", express.static(path.join(__dirname, "uploads")));
 app.listen(port, () => {
   console.log(`server is lisitng on PORT ${port}`);
 });
