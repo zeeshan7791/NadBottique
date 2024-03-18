@@ -32,7 +32,7 @@ const registerUser = async (req, res, next) => {
 
 const loginUser = async (req, res, next) => {
   const { loginEmail, loginPassword } = req.body;
-  console.log(req.body, "frontendcallllll");
+
   if (!loginEmail || !loginPassword) {
     return next(errorHandler(400, "Please enter email and password"));
   }
