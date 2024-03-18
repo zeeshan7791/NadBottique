@@ -31,18 +31,18 @@ const registerUser = async (req, res, next) => {
 };
 
 const loginUser = async (req, res, next) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
+  const { loginEmail, loginPassword } = req.body;
+  console.log(req.body, "frontendcallllll");
+  if (!loginEmail || !loginPassword) {
     return next(errorHandler(400, "Please enter email and password"));
   }
 
   try {
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ email: loginEmail }).select("+password");
     if (!user) {
       return next(errorHandler(401, "invalid email or password"));
     }
-    const isPasswordMatch = await user.comparePassword(password);
+    const isPasswordMatch = await user.comparePassword(loginPassword);
 
     if (!isPasswordMatch) {
       return next(errorHandler(401, "invalid email or password"));
