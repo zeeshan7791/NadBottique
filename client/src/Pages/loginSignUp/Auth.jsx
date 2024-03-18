@@ -23,9 +23,27 @@ const LoginSignUp = () => {
   const { name, email, password } = user;
   const [avatar, setAvatar] = useState(null);
 
-  const loginSubmit = (e) => {
+  const loginSubmit = async (e) => {
     e.preventDefault();
-    setUser();
+
+    const res = await fetch("http://localhost:5000/api/user/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        loginEmail,
+        loginPassword,
+      }),
+    });
+    const data = await res.json();
+
+    console.log(data);
+    if (data.success === false) {
+      toast.error(data.message);
+      return;
+    }
+    toast.success(data.message);
   };
   const registerDataChange = (e) => {
     if (e.target.name === "avatar") {
