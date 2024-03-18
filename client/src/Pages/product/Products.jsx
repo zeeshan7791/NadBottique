@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./Products.css";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -7,10 +7,11 @@ import Slider from "@material-ui/core/Slider";
 import Typography from "@material-ui/core/Typography";
 import { useParams } from "react-router-dom";
 import { allProductsActions } from "../../redux/products/allProductsSlice";
-import { toast } from "react-toastify";
+
 import Loader from "../../components/layout/loader/Loader";
 import MetaData from "../../components/layout/MetaData";
 import ProductCard from "../../components/products/ProductCard";
+import { serverURL } from "../../config/config";
 
 const categories = [
   "Laptop",
@@ -28,11 +29,10 @@ const Products = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [price, setPrice] = useState([0, 25000]);
   const [category, setCategory] = useState("");
-  const [loading, setLoading] = useState("");
 
   const [ratings, setRatings] = useState(0);
-
-  const { allProducts } = useSelector((state) => state.allProducts);
+  let selectedCategory = category;
+  const { allProducts, loading } = useSelector((state) => state.allProducts);
   const params = useParams();
   const keyword = params.keyword;
   console.log(keyword, "value in keyword");
@@ -45,15 +45,24 @@ const Products = () => {
   };
   let count = allProducts.filteredProductsCount;
 
-  const showAllProducts = async (keyword, currentPage, category, price) => {
+  const showAllProducts = async (
+    keyword = "",
+    currentPage = 1,
+    price = [0, 7665000],
+    category,
+    ratings = 0
+  ) => {
     try {
       dispatch(allProductsActions.ALL_PRODUCT_REQUEST());
-      setLoading(true);
-      let link = `http://localhost:5000/api/product/all-products??keyword=${keyword}&page=${currentPage}&price[gte]=${price[0]}&price[lte]=${price[1]}&ratings[gte]=${ratings}`;
+
+      let link = `${serverURL}/product/all-products?keyword=${keyword}&page=${currentPage}&price[gte]=${price[0]}&price[lte]=${price[1]}&ratings[gte]=${ratings}`;
       if (category) {
-        link = `http://localhost:5000/api/product/all-products?keyword=${keyword}&page=${currentPage}&price[gte]=${price[0]}&price[lte]=${price[1]}&category=${category}&ratings[gte]=${ratings}`;
+        link = `${serverURL}/product/all-products?keyword=${keyword}&page=${currentPage}&price[gte]=${price[0]}&price[lte]=${price[1]}&category=${category}&ratings[gte]=${ratings}`;
       }
+
       const res = await fetch(link);
+      // const res = await fetch(`${serverURL}/product/all-products`);
+
       const data = await res.json();
       console.log(data, "value in data------");
       if (data.success === false) {
@@ -61,18 +70,15 @@ const Products = () => {
         return;
       }
       dispatch(allProductsActions.ALL_PRODUCT_SUCCESS(data));
-      toast.success(data.message);
-      setLoading(false);
     } catch (error) {
-      setLoading(false);
       dispatch(allProductsActions.ALL_PRODUCT_FAIL(error.message));
     }
   };
 
   useEffect(() => {
-    showAllProducts(keyword, currentPage, category, price);
-  }, [dispatch, keyword, currentPage, category, price]);
-  console.log(allProducts, "allProducts-------");
+    showAllProducts(keyword, currentPage, price, category, ratings);
+  }, [dispatch, keyword, currentPage, price, category, ratings]);
+  console.log(category);
   return (
     <>
       {loading ? (
@@ -85,7 +91,15 @@ const Products = () => {
           <div className="products">
             {allProducts.products &&
               allProducts.products.map((product) => (
-                <ProductCard key={product._id} product={product} />
+                <ProductCard
+                  key={product._id}
+                  product={product}
+                  keyword={keyword}
+                  currentPage={currentPage}
+                  category={category}
+                  price={price}
+                  ratings={ratings}
+                />
               ))}
           </div>
 
@@ -97,7 +111,7 @@ const Products = () => {
               valueLabelDisplay="auto"
               aria-labelledby="range-slider"
               min={0}
-              max={25000}
+              max={7895000}
             />
 
             <Typography>Categories</Typography>
@@ -106,6 +120,9 @@ const Products = () => {
                 <li
                   className="category-link"
                   key={category}
+                  style={{
+                    color: selectedCategory === category ? "tomato" : "",
+                  }}
                   onClick={() => setCategory(category)}
                 >
                   {category}
