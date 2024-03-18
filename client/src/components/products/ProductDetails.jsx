@@ -1,57 +1,91 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import MetaData from "../layout/MetaData";
 import Carousel from "react-material-ui-carousel";
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Button,
-} from "@material-ui/core";
+// import {
+//   Dialog,
+//   DialogActions,
+//   DialogContent,
+//   DialogTitle,
+//   Button,
+// } from "@material-ui/core";
 import { Rating } from "@material-ui/lab";
 import "./ProductDetails.css";
 import ReviewCard from "./ReviewCard";
+
+import { productDetailsAction } from "../../redux/products/productDetailsSlice";
+
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { serverURL, imageLink } from "../../config/config";
 const ProductDetails = () => {
+  const dispatch = useDispatch();
+  const params = useParams();
+  const productId = params.productId;
   const { productDetails } = useSelector((state) => state.productDetails);
   console.log(productDetails, "productDetails");
+  const { singleProduct } = productDetails;
   const options = {
     size: "large",
-    value: productDetails.singleProduct.ratings,
+    value: singleProduct.ratings,
     readOnly: true,
     precision: 0.5,
   };
+  const showProductDetails = async (productId) => {
+    try {
+      dispatch(productDetailsAction.PRODUCT_DETAILS_REQUEST());
+
+      const res = await fetch(
+        `${serverURL}/product/single-product/${productId}`
+      );
+      const data = await res.json();
+
+      if (data.success === false) {
+        dispatch(productDetailsAction.PRODUCT_DETAILS_FAIL(data.message));
+        return;
+      }
+      dispatch(productDetailsAction.PRODUCT_DETAILS_SUCCESS(data));
+    } catch (error) {
+      dispatch(productDetailsAction.ALL_PRODUCT_FAIL(error.message));
+    }
+  };
+  useEffect(() => {
+    showProductDetails(productId);
+  }, [dispatch, productId]);
   return (
     <>
-      <MetaData title={`${productDetails.singleProduct.name} -- ECOMMERCE`} />
+      <MetaData title={`${singleProduct.name} -- ECOMMERCE`} />
       <div className="ProductDetails">
         <div>
-          {/* <Carousel>
-            {product.images &&
-              product.images.map((item, i) => (
+          <Carousel
+            className="CarouselImageWrapper"
+            style={{ width: "100%", height: "100%" }}
+          >
+            {singleProduct.pictures &&
+              singleProduct.pictures.map((picture, i) => (
                 <img
                   className="CarouselImage"
                   key={i}
-                  src={item.url}
+                  src={imageLink + picture}
                   alt={`${i} Slide`}
                 />
               ))}
-          </Carousel> */}
+          </Carousel>
         </div>
 
         <div>
           <div className="detailsBlock-1">
-            <h2>{productDetails.singleProduct.name}</h2>
-            <p>Product # {productDetails.singleProduct._id}</p>
+            <h2>{singleProduct.name}</h2>
+            <p>Product # {singleProduct._id}</p>
           </div>
           <div className="detailsBlock-2">
             <Rating {...options} />
             <span className="detailsBlock-2-span">
               {" "}
-              ({productDetails.singleProduct.numOfReviews} Reviews)
+              ({singleProduct.numOfReviews} Reviews)
             </span>
           </div>
           <div className="detailsBlock-3">
-            <h1>{`₹${productDetails.singleProduct.price}`}</h1>
+            <h1>{`₹${singleProduct.price}`}</h1>
             <div className="detailsBlock-3-1">
               <div className="detailsBlock-3-1-1">
                 <button onClick={"decreaseQuantity"}>-</button>
@@ -59,7 +93,7 @@ const ProductDetails = () => {
                 <button onClick={"increaseQuantity"}>+</button>
               </div>
               <button
-                disabled={"product.Stock < 1 ? true : false"}
+                disabled={singleProduct.Stock < 1 ? true : false}
                 onClick={"addToCartHandler"}
               >
                 Add to Cart
@@ -68,9 +102,11 @@ const ProductDetails = () => {
 
             <p>
               Status:
-              {/* <b className={product.Stock < 1 ? "redColor" : "greenColor"}>
-                {product.Stock < 1 ? "OutOfStock" : "InStock"}
-              </b> */}
+              <b
+                className={singleProduct.Stock < 1 ? "redColor" : "greenColor"}
+              >
+                {singleProduct.Stock < 1 ? "OutOfStock" : "InStock"}
+              </b>
             </p>
           </div>
 
