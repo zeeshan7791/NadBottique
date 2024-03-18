@@ -44,11 +44,13 @@ const getAllProducts = async (req, res, next) => {
     const apiFeature = new ApiFeatures(Product.find(), req.query)
       .search()
       .filter();
+
     let products = await apiFeature.query;
+
     let filteredProductsCount = products.length;
+
     apiFeature.pagination(resultPerPage);
-    // const allProducts = await Product.find();
-    products = await apiFeature.query;
+
     if (!products) {
       return res.status(401).json({
         success: true,
