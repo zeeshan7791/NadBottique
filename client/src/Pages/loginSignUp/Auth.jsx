@@ -3,14 +3,14 @@ import "./LoginSignUp.css";
 import MailOutlineIcon from "@material-ui/icons/MailOutline";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
 import FaceIcon from "@material-ui/icons/Face";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import profile from "../../assets/profile.png";
 import { toast } from "react-toastify";
 const LoginSignUp = () => {
   const loginTab = useRef(null);
   const registerTab = useRef(null);
   const switcherTab = useRef(null);
-
+  const navigate = useNavigate();
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
 
@@ -44,6 +44,7 @@ const LoginSignUp = () => {
       return;
     }
     toast.success(data.message);
+    navigate("/");
   };
   const registerDataChange = (e) => {
     if (e.target.name === "avatar") {
@@ -54,6 +55,23 @@ const LoginSignUp = () => {
     }
   };
   console.log(avatar);
+
+  const switchTabs = (e, tab) => {
+    if (tab === "login") {
+      switcherTab.current.classList.add("shiftToNeutral");
+      switcherTab.current.classList.remove("shiftToRight");
+
+      registerTab.current.classList.remove("shiftToNeutralForm");
+      loginTab.current.classList.remove("shiftToLeft");
+    }
+    if (tab === "register") {
+      switcherTab.current.classList.add("shiftToRight");
+      switcherTab.current.classList.remove("shiftToNeutral");
+
+      registerTab.current.classList.add("shiftToNeutralForm");
+      loginTab.current.classList.add("shiftToLeft");
+    }
+  };
   const registerSubmit = async (e) => {
     e.preventDefault();
     const signUpData = new FormData();
@@ -74,25 +92,8 @@ const LoginSignUp = () => {
       return;
     }
     toast.success(data.message);
+    switchTabs("e", "login");
   };
-
-  const switchTabs = (e, tab) => {
-    if (tab === "login") {
-      switcherTab.current.classList.add("shiftToNeutral");
-      switcherTab.current.classList.remove("shiftToRight");
-
-      registerTab.current.classList.remove("shiftToNeutralForm");
-      loginTab.current.classList.remove("shiftToLeft");
-    }
-    if (tab === "register") {
-      switcherTab.current.classList.add("shiftToRight");
-      switcherTab.current.classList.remove("shiftToNeutral");
-
-      registerTab.current.classList.add("shiftToNeutralForm");
-      loginTab.current.classList.add("shiftToLeft");
-    }
-  };
-
   return (
     <>
       <div className="LoginSignUpContainer">
