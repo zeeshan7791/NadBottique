@@ -6,6 +6,9 @@ import FaceIcon from "@material-ui/icons/Face";
 import { Link, useNavigate } from "react-router-dom";
 import profile from "../../assets/profile.png";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { userActions } from "../../redux/user/registerUserSlice";
+import { serverURL } from "../../config/config";
 const LoginSignUp = () => {
   const loginTab = useRef(null);
   const registerTab = useRef(null);
@@ -13,7 +16,7 @@ const LoginSignUp = () => {
   const navigate = useNavigate();
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
-
+  const dispatch = useDispatch();
   const [user, setUser] = useState({
     name: "",
     email: "",
@@ -22,11 +25,15 @@ const LoginSignUp = () => {
 
   const { name, email, password } = user;
   const [avatar, setAvatar] = useState(null);
-
+  const { currentUser, error, loading, isAuthenticated } = useSelector(
+    (state) => state.user
+  );
   const loginSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:5000/api/user/login", {
+    dispatch(userActions.signInStart());
+
+    const res = await fetch(`${serverURL}/user/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -38,11 +45,13 @@ const LoginSignUp = () => {
     });
     const data = await res.json();
 
-    console.log(data);
     if (data.success === false) {
       toast.error(data.message);
+      dispatch(userActions.signInFailure(data.message));
       return;
     }
+
+    dispatch(userActions.signInSuccess(data.rest));
     toast.success(data.message);
     navigate("/");
   };
@@ -54,7 +63,6 @@ const LoginSignUp = () => {
       setUser({ ...user, [e.target.name]: e.target.value });
     }
   };
-  console.log(avatar);
 
   const switchTabs = (e, tab) => {
     if (tab === "login") {
@@ -85,8 +93,7 @@ const LoginSignUp = () => {
       body: signUpData,
     });
     const data = await res.json();
-    console.log(data);
-    console.log(data);
+
     if (data.success === false) {
       toast.error(data.message);
       return;
@@ -94,6 +101,7 @@ const LoginSignUp = () => {
     toast.success(data.message);
     switchTabs("e", "login");
   };
+
   return (
     <>
       <div className="LoginSignUpContainer">

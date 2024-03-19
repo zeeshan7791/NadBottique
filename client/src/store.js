@@ -4,8 +4,10 @@ import storage from "redux-persist/lib/storage";
 import persistStore from "redux-persist/es/persistStore";
 import allProductsSlice from "./redux/products/allProductsSlice";
 import productDetailsSlice from "./redux/products/productDetailsSlice";
+import registerUserSlice from "./redux/user/registerUserSlice";
 
 const rootReducer = combineReducers({
+  user: registerUserSlice,
   allProducts: allProductsSlice,
   productDetails: productDetailsSlice,
 });
