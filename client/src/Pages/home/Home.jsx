@@ -16,7 +16,7 @@ const Home = () => {
   const { allProducts, loading, error } = useSelector(
     (state) => state.allProducts
   );
-  console.log(allProducts, "value in all products");
+
   const dispatch = useDispatch();
   const showAllProducts = async () => {
     try {
@@ -24,7 +24,7 @@ const Home = () => {
       const res = await fetch(`${serverURL}/product/all-products`);
 
       const data = await res.json();
-      console.log(data, "value in data------");
+
       if (data.success === false) {
         dispatch(allProductsActions.ALL_PRODUCT_FAIL(data.message));
         return;
@@ -40,7 +40,7 @@ const Home = () => {
   }, [dispatch]);
   return (
     <>
-      <MetaData title={"Nadboutique"} />
+      <MetaData title={"Nadboutique --Ecommerce"} />
       <div className="banner">
         <p>Welcome to Ecommerce</p>
 
