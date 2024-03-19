@@ -9,12 +9,12 @@ const sendToken = (user, statusCode, message, res) => {
     ),
     httpOnly: true,
   };
+  const { password: pass, ...rest } = user._doc;
 
   return res.status(statusCode).cookie("token", token, options).json({
     success: true,
     message: message,
-    user,
-    token,
+    rest,
   });
 };
 

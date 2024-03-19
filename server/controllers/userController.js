@@ -47,6 +47,7 @@ const loginUser = async (req, res, next) => {
     if (!isPasswordMatch) {
       return next(errorHandler(401, "invalid email or password"));
     }
+
     sendToken(user, 200, "login successfully", res);
   } catch (error) {
     next(error);
