@@ -6,7 +6,7 @@ import FaceIcon from "@material-ui/icons/Face";
 import { Link, useNavigate } from "react-router-dom";
 import profile from "../../assets/profile.png";
 import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { userActions } from "../../redux/user/registerUserSlice";
 import { serverURL } from "../../config/config";
 const LoginSignUp = () => {
@@ -25,35 +25,36 @@ const LoginSignUp = () => {
 
   const { name, email, password } = user;
   const [avatar, setAvatar] = useState(null);
-  const { currentUser, error, loading, isAuthenticated } = useSelector(
-    (state) => state.user
-  );
+
   const loginSubmit = async (e) => {
     e.preventDefault();
+    try {
+      dispatch(userActions.signInStart());
 
-    dispatch(userActions.signInStart());
+      const res = await fetch(`${serverURL}/user/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          loginEmail,
+          loginPassword,
+        }),
+      });
+      const data = await res.json();
 
-    const res = await fetch(`${serverURL}/user/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        loginEmail,
-        loginPassword,
-      }),
-    });
-    const data = await res.json();
+      if (data.success === false) {
+        toast.error(data.message);
+        dispatch(userActions.signInFailure(data.message));
+        return;
+      }
 
-    if (data.success === false) {
-      toast.error(data.message);
-      dispatch(userActions.signInFailure(data.message));
-      return;
+      dispatch(userActions.signInSuccess(data.rest));
+      toast.success(data.message);
+      navigate("/");
+    } catch (error) {
+      dispatch(userActions.signInFailure(error));
     }
-
-    dispatch(userActions.signInSuccess(data.rest));
-    toast.success(data.message);
-    navigate("/");
   };
   const registerDataChange = (e) => {
     if (e.target.name === "avatar") {
@@ -82,24 +83,28 @@ const LoginSignUp = () => {
   };
   const registerSubmit = async (e) => {
     e.preventDefault();
-    const signUpData = new FormData();
-    signUpData.append("name", name);
-    signUpData.append("email", email);
-    signUpData.append("password", password);
-    signUpData.append("avatar", avatar);
+    try {
+      const signUpData = new FormData();
+      signUpData.append("name", name);
+      signUpData.append("email", email);
+      signUpData.append("password", password);
+      signUpData.append("avatar", avatar);
 
-    const res = await fetch("http://localhost:5000/api/user/register", {
-      method: "POST",
-      body: signUpData,
-    });
-    const data = await res.json();
+      const res = await fetch(`${serverURL}/user/register`, {
+        method: "POST",
+        body: signUpData,
+      });
+      const data = await res.json();
 
-    if (data.success === false) {
-      toast.error(data.message);
-      return;
+      if (data.success === false) {
+        toast.error(data.message);
+        return;
+      }
+      toast.success(data.message);
+      switchTabs("e", "login");
+    } catch (error) {
+      toast.error(error);
     }
-    toast.success(data.message);
-    switchTabs("e", "login");
   };
 
   return (
