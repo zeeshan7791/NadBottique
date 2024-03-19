@@ -55,10 +55,12 @@ const userSlice = createSlice({
     },
     signoutUserStart: (state) => {
       state.loading = true;
+      state.isAuthenticated = false;
     },
     signoutUserSuccess: (state) => {
       state.currentUser = null;
       state.loading = false;
+      state.isAuthenticated = false;
       state.error = null;
     },
     signoutUserFailure: (state, action) => {
