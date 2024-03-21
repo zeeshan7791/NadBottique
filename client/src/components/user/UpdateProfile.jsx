@@ -16,7 +16,7 @@ const UpdateProfile = () => {
   const [name, setName] = useState(currentUser.name);
   const [email, setEmail] = useState(currentUser.email);
   const [avatar, setAvatar] = useState(null);
-
+  console.log(currentUser._id, "currentUser._id");
   const updateProfileSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -28,10 +28,13 @@ const UpdateProfile = () => {
 
       const res = await fetch(`${serverURL}/user/update/${currentUser._id}`, {
         method: "POST",
+
+        credentials: "include",
+
         body: updateData,
       });
       const data = await res.json();
-
+      console.log(data, "value in update daat");
       if (data.success === false) {
         toast.error(data.message);
         dispatch(userActions.updateUserFailure(data.message));
