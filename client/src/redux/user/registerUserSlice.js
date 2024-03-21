@@ -20,7 +20,7 @@ const userSlice = createSlice({
       state.isAuthenticated = false;
     },
     [signInSuccess]: (state, action) => {
-      state.currentUser = action.payload;
+      state.currentUser = action.payload.rest;
       state.isAuthenticated = true;
       state.error = null;
       state.loading = false;
@@ -32,14 +32,17 @@ const userSlice = createSlice({
     },
     updateUserStart: (state) => {
       state.loading = true;
+      state.isAuthenticated = false;
     },
     updateUserSuccess: (state, action) => {
       (state.currentUser = action.payload),
         (state.loading = false),
         (state.error = null);
+      state.isAuthenticated = true;
     },
     updateUserFailure: (state, action) => {
       (state.error = action.payload), (state.loading = false);
+      state.isAuthenticated = false;
     },
     deleteUserStart: (state) => {
       state.loading = true;

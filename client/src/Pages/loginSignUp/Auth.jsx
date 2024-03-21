@@ -29,6 +29,7 @@ const LoginSignUp = () => {
   const loginSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Alert to indicate that the button has been clicked
       dispatch(userActions.signInStart());
 
       const res = await fetch(`${serverURL}/user/login`, {
@@ -36,26 +37,37 @@ const LoginSignUp = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
           loginEmail,
           loginPassword,
         }),
       });
-      const data = await res.json();
 
+      const data = await res.json();
+      console.log(data, "value in data--------");
+
+      // Check if login was successful
       if (data.success === false) {
         toast.error(data.message);
         dispatch(userActions.signInFailure(data.message));
         return;
       }
 
-      dispatch(userActions.signInSuccess(data.rest));
-      toast.success(data.message);
-      navigate("/");
+      // Display success message using toast
+      if (data.success == true) {
+        dispatch(userActions.signInSuccess(data));
+        toast.success(data.message);
+        navigate("/");
+        return;
+      }
     } catch (error) {
-      dispatch(userActions.signInFailure(error));
+      // Display error message using toast if an error occurs
+      toast.error(error.Error);
+      dispatch(userActions.signInFailure(error.message));
     }
   };
+
   const registerDataChange = (e) => {
     if (e.target.name === "avatar") {
       setUser({ ...user, [e.target.name]: e.target.value });
