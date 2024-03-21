@@ -40,7 +40,7 @@ const loginUser = async (req, res, next) => {
   try {
     const user = await User.findOne({ email: loginEmail }).select("+password");
     if (!user) {
-      return next(errorHandler(401, "invalid email or password"));
+      return next(errorHandler(401, "user not found", res));
     }
     const isPasswordMatch = await user.comparePassword(loginPassword);
 
@@ -190,16 +190,21 @@ const updatePassword = async (req, res, next) => {
 const updateProfile = async (req, res, next) => {
   try {
     const { name, email } = req.body;
-    console.log(req.params.id);
+    // console.log(req.body, "value in req");
     const user = await User.findById(req.params.id); // Corrected req.parmas.id to req.params.id
-    console.log(user);
+    // console.log(req.params.id);
     if (!user) {
       return next(errorHandler(404, "user not found"));
     }
+    const pic = req.file ? req.file.filename : "";
+
     const update = {
       name,
       email,
     };
+    if (pic) {
+      update.avatar = pic;
+    }
     const updateUser = await User.findByIdAndUpdate(req.params.id, update, {
       new: true,
     });
@@ -216,7 +221,7 @@ const updateRole = async (req, res, next) => {
   try {
     const { name, email, role } = req.body;
     console.log(req.params.id);
-    const user = await User.findById(req.params.id); // Corrected req.parmas.id to req.params.id
+    const user = await User.findById(req.params.id);
     console.log(user);
     if (!user) {
       return next(errorHandler(404, "user not found"));
