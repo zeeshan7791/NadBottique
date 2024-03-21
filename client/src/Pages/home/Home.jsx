@@ -30,6 +30,7 @@ const Home = () => {
         return;
       }
       dispatch(allProductsActions.ALL_PRODUCT_SUCCESS(data));
+      return;
     } catch (error) {
       dispatch(allProductsActions.ALL_PRODUCT_FAIL(error.message));
     }
@@ -38,33 +39,34 @@ const Home = () => {
   useEffect(() => {
     showAllProducts();
   }, [dispatch]);
+  console.log(allProducts, "value in all products");
   return (
     <>
-      <MetaData title={"Nadboutique --Ecommerce"} />
-      <div className="banner">
-        <p>Welcome to Ecommerce</p>
-
-        <h1>FIND AMAZING PRODUCTS BELOW</h1>
-
-        <a href="#container">
-          <button>
-            Scroll <CgMouse />
-          </button>
-        </a>
-      </div>
-      <h2 className="homeHeading">Featured Products</h2>
-      <div className="container" id="container">
-        {error ? (
-          "error"
-        ) : loading ? (
-          <Loader />
-        ) : (
-          allProducts.products &&
-          allProducts.products.map((product) => (
-            <ProductCard key={product._id} product={product} />
-          ))
-        )}
-      </div>
+      {loading ? (
+        <Loader />
+      ) : (
+        <>
+          <MetaData title={"Nadboutique --Ecommerce"} />
+          <div className="banner">
+            <p>Welcome to Ecommerce</p>
+            <h1>FIND AMAZING PRODUCTS BELOW</h1>
+            <a href="#container">
+              <button>
+                Scroll <CgMouse />
+              </button>
+            </a>
+          </div>
+          <h2 className="homeHeading">Featured Products</h2>
+          <div className="container" id="container">
+            {error
+              ? "error"
+              : allProducts.products &&
+                allProducts.products.map((product) => (
+                  <ProductCard key={product._id} product={product} />
+                ))}
+          </div>
+        </>
+      )}
     </>
   );
 };

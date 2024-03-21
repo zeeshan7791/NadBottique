@@ -14,6 +14,8 @@ import Search from "./components/products/Search";
 import { useSelector } from "react-redux";
 import MenuOption from "./components/layout/header/MenuOption";
 import Profile from "./components/user/Profile";
+import UpdateProfile from "./components/user/UpdateProfile";
+import UpdatePassword from "./components/user/UpdatePassword";
 
 const App = () => {
   useEffect(() => {
@@ -42,6 +44,8 @@ const App = () => {
           <Route path="/Search" element={<Search />}></Route>
           <Route path="/login" element={<LoginSignUp />}></Route>
           <Route path="/account" element={<Profile />}></Route>
+          <Route path="/me/update" element={<UpdateProfile />}></Route>
+          <Route path="/password/update" element={<UpdatePassword />}></Route>
         </Routes>
         <Footer />
       </BrowserRouter>
