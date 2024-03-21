@@ -3,11 +3,10 @@ import "./Profile.css";
 import MetaData from "../layout/MetaData";
 import { imageLink } from "../../config/config";
 import { useSelector } from "react-redux";
+import Loader from "../layout/loader/Loader";
 
 const Profile = () => {
-  const { currentUser, loading, isAuthenticated } = useSelector(
-    (state) => state.user
-  );
+  const { currentUser, loading } = useSelector((state) => state.user);
 
   return (
     <>
