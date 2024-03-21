@@ -7,7 +7,11 @@ const sendToken = (user, statusCode, message, res) => {
     expires: new Date(
       Date.now() + parseInt(process.env.COOKIE_EXPIRE) * 24 * 60 * 60 * 1000
     ),
+
     httpOnly: true,
+    path: "/",
+    sameSite: "None", // Only use with HTTPS
+    secure: true, // Only use with HTTPS
   };
   const { password: pass, ...rest } = user._doc;
 
@@ -15,6 +19,7 @@ const sendToken = (user, statusCode, message, res) => {
     success: true,
     message: message,
     rest,
+    token,
   });
 };
 

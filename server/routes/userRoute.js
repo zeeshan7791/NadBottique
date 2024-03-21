@@ -22,7 +22,12 @@ router.post("/forget/password", forgetPassword);
 router.put("/password/reset/:token", resetPassword);
 router.get("/details", isAuthenticatedUser, getUserDetails);
 router.put("/change", isAuthenticatedUser, updatePassword);
-router.post("/update/:id", isAuthenticatedUser, updateProfile);
+router.post(
+  "/update/:id",
+  isAuthenticatedUser,
+  upload.single("avatar"),
+  updateProfile
+);
 router.get("/remove/:id", isAuthenticatedUser, deleteUser);
 router.get(
   "/all-users",
