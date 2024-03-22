@@ -9,25 +9,20 @@ import VpnKeyIcon from "@material-ui/icons/VpnKey";
 import { toast } from "react-toastify";
 import { serverURL } from "../../config/config";
 const UpdatePassword = () => {
-  const { currentUser, loading, error } = useSelector((state) => state.user);
-  //   console.log(token, "value in token");
+  const { loading } = useSelector((state) => state.user);
+
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const updatePasswordSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("token="))
-        .split("=")[1];
-
       const res = await fetch(`${serverURL}/user/change`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
+        credentials: "include",
         body: JSON.stringify({
           oldPassword,
           newPassword,
