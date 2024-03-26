@@ -14,7 +14,7 @@ import ReviewCard from "./ReviewCard";
 
 import { productDetailsAction } from "../../redux/products/productDetailsSlice";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { serverURL, imageLink } from "../../config/config";
 const ProductDetails = () => {
@@ -30,15 +30,31 @@ const ProductDetails = () => {
     readOnly: true,
     precision: 0.5,
   };
+
+
+  const [quantity, setQuantity] = useState(1);
+
+  const increaseQuantity = () => {
+    if (singleProduct.Stock <= quantity) return;
+
+    const qty = quantity + 1;
+    setQuantity(qty);
+  };
+
+  const decreaseQuantity = () => {
+    if (1 >= quantity) return;
+
+    const qty = quantity - 1;
+    setQuantity(qty);
+  };
   const showProductDetails = async (productId) => {
     try {
       dispatch(productDetailsAction.PRODUCT_DETAILS_REQUEST());
 
-      const res = await fetch(
-        `${serverURL}/product/single-product/${productId}`
+      const res = await fetch(`${serverURL}/product/single-product/${productId}`
       );
       const data = await res.json();
-
+console.log(data,'value in single product--------')
       if (data.success === false) {
         dispatch(productDetailsAction.PRODUCT_DETAILS_FAIL(data.message));
         return;
@@ -56,7 +72,7 @@ const ProductDetails = () => {
       <MetaData title={`${singleProduct.name} -- ECOMMERCE`} />
       <div className="ProductDetails">
         <div>
-          <Carousel
+           <Carousel
             className="CarouselImageWrapper"
             style={{ width: "100%", height: "100%" }}
           >
@@ -69,7 +85,7 @@ const ProductDetails = () => {
                   alt={`${i} Slide`}
                 />
               ))}
-          </Carousel>
+          </Carousel> 
         </div>
 
         <div>
@@ -88,9 +104,9 @@ const ProductDetails = () => {
             <h1>{`₹${singleProduct.price}`}</h1>
             <div className="detailsBlock-3-1">
               <div className="detailsBlock-3-1-1">
-                <button onClick={"decreaseQuantity"}>-</button>
-                <input readOnly type="number" value={"quantity"} />
-                <button onClick={"increaseQuantity"}>+</button>
+                <button onClick={decreaseQuantity}>-</button>
+                <input readOnly type="number" value={quantity} />
+                <button onClick={increaseQuantity}>+</button>
               </div>
               <button
                 disabled={singleProduct.Stock < 1 ? true : false}
@@ -117,10 +133,10 @@ const ProductDetails = () => {
           <button onClick={"submitReviewToggle"} className="submitReview">
             Submit Review
           </button>
-        </div>
+        </div> 
       </div>
       <h3 className="reviewsHeading">REVIEWS</h3>
-      {/* <Dialog
+       {/* <Dialog
         aria-labelledby="simple-dialog-title"
         open={open}
         onClose={"submitReviewToggle"}
@@ -149,19 +165,19 @@ const ProductDetails = () => {
             Submit
           </Button>
         </DialogActions>
-      </Dialog> */}
+      </Dialog>  */}
       {productDetails.singleProduct.reviews &&
       productDetails.singleProduct.reviews[0] ? (
         <div className="reviews">
           {productDetails.singleProduct.reviews &&
             productDetails.singleProduct.reviews.map((review) => (
               <ReviewCard key={review._id} review={review} />
-            ))}
-        </div>
+            ))} 
+         </div>
       ) : (
         <p className="noReviews">No Reviews Yet</p>
-      )}{" "}
-      *
+      )}
+      
     </>
   );
 };
