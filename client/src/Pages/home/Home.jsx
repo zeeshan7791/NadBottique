@@ -13,7 +13,7 @@ import { useEffect } from "react";
 import { serverURL } from "../../config/config";
 
 const Home = () => {
-  const { allProducts, loading, error } = useSelector(
+  const { allProducts, loading } = useSelector(
     (state) => state.allProducts
   );
 
@@ -58,9 +58,10 @@ const Home = () => {
           </div>
           <h2 className="homeHeading">Featured Products</h2>
           <div className="container" id="container">
-            {error
-              ? "error"
-              : allProducts.products &&
+            {allProducts===null
+              ? <>
+              <div><p>no Product Exist</p></div>
+              </>              : allProducts.products &&
                 allProducts.products.map((product) => (
                   <ProductCard key={product._id} product={product} />
                 ))}
