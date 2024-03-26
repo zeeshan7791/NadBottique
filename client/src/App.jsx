@@ -16,6 +16,8 @@ import MenuOption from "./components/layout/header/MenuOption";
 import Profile from "./components/user/Profile";
 import UpdateProfile from "./components/user/UpdateProfile";
 import UpdatePassword from "./components/user/UpdatePassword";
+import ForgotPassword from "./components/user/ForgotPassword";
+import Cart from "./components/cart/Cart";
 
 const App = () => {
   useEffect(() => {
@@ -40,12 +42,18 @@ const App = () => {
             element={<ProductDetails />}
           ></Route>
           <Route path="/products" element={<Products />}></Route>
+          <Route path="/cart" element={<Cart />}></Route>
           <Route path="/products/:keyword" element={<Products />}></Route>
           <Route path="/Search" element={<Search />}></Route>
           <Route path="/login" element={<LoginSignUp />}></Route>
           <Route path="/account" element={<Profile />}></Route>
           <Route path="/me/update" element={<UpdateProfile />}></Route>
           <Route path="/password/update" element={<UpdatePassword />}></Route>
+          <Route path="/password/forgot" element={<ForgotPassword />}></Route>
+          <Route
+            path="/password/reset/:token"
+            element={<ForgotPassword />}
+          ></Route>
         </Routes>
         <Footer />
       </BrowserRouter>
