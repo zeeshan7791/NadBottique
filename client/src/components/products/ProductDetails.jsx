@@ -17,11 +17,13 @@ import { productDetailsAction } from "../../redux/products/productDetailsSlice";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { serverURL, imageLink } from "../../config/config";
+import { cartItemsAction } from "../../redux/cartItems/cartSlice";
 const ProductDetails = () => {
   const dispatch = useDispatch();
   const params = useParams();
   const productId = params.productId;
   const { productDetails } = useSelector((state) => state.productDetails);
+  const { cartItems } = useSelector((state) => state.cart);
   console.log(productDetails, "productDetails");
   const { singleProduct } = productDetails;
   const options = {
@@ -35,7 +37,7 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
 
   const increaseQuantity = () => {
-    if (singleProduct.Stock <= quantity) return;
+    if (singleProduct.stock <= quantity) return;
 
     const qty = quantity + 1;
     setQuantity(qty);
@@ -54,7 +56,7 @@ const ProductDetails = () => {
       const res = await fetch(`${serverURL}/product/single-product/${productId}`
       );
       const data = await res.json();
-console.log(data,'value in single product--------')
+
       if (data.success === false) {
         dispatch(productDetailsAction.PRODUCT_DETAILS_FAIL(data.message));
         return;
@@ -67,6 +69,20 @@ console.log(data,'value in single product--------')
   useEffect(() => {
     showProductDetails(productId);
   }, [dispatch, productId]);
+
+  const addToCartHandler=(id,name,price,image,stock,quantity)=>{
+  let data={
+    product: id,
+    name: name,
+    price:price,
+    image:image,
+    stock:stock,
+    quantity,
+  }
+    dispatch(cartItemsAction.ADD_TO_CART(data))
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }
+ console.log(singleProduct,'value in single product')
   return (
     <>
       <MetaData title={`${singleProduct.name} -- ECOMMERCE`} />
@@ -109,8 +125,8 @@ console.log(data,'value in single product--------')
                 <button onClick={increaseQuantity}>+</button>
               </div>
               <button
-                disabled={singleProduct.Stock < 1 ? true : false}
-                onClick={"addToCartHandler"}
+                disabled={singleProduct.stock < 1 ? true : false}
+                onClick={()=>addToCartHandler(singleProduct._id,singleProduct.name,singleProduct.price,singleProduct.pictures[0],singleProduct.stock,quantity)}
               >
                 Add to Cart
               </button>
@@ -119,9 +135,9 @@ console.log(data,'value in single product--------')
             <p>
               Status:
               <b
-                className={singleProduct.Stock < 1 ? "redColor" : "greenColor"}
+                className={singleProduct.stock < 1 ? "redColor" : "greenColor"}
               >
-                {singleProduct.Stock < 1 ? "OutOfStock" : "InStock"}
+                {singleProduct.stock < 1 ? "OutOfStock" : "InStock"}
               </b>
             </p>
           </div>
