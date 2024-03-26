@@ -5,11 +5,13 @@ import persistStore from "redux-persist/es/persistStore";
 import allProductsSlice from "./redux/products/allProductsSlice";
 import productDetailsSlice from "./redux/products/productDetailsSlice";
 import registerUserSlice from "./redux/user/registerUserSlice";
+import cartSlice from "./redux/cartItems/cartSlice";
 
 const rootReducer = combineReducers({
   user: registerUserSlice,
   allProducts: allProductsSlice,
   productDetails: productDetailsSlice,
+  cart:cartSlice
 });
 const persistConfig = {
   key: "root",
