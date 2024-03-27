@@ -18,6 +18,8 @@ import UpdateProfile from "./components/user/UpdateProfile";
 import UpdatePassword from "./components/user/UpdatePassword";
 import ForgotPassword from "./components/user/ForgotPassword";
 import Cart from "./components/cart/Cart";
+import Shipping from "./components/shippingOrder/Shipping";
+import ConfirmOrder from "./components/shippingOrder/ConfirmOrder";
 
 const App = () => {
   useEffect(() => {
@@ -43,6 +45,8 @@ const App = () => {
           ></Route>
           <Route path="/products" element={<Products />}></Route>
           <Route path="/cart" element={<Cart />}></Route>
+          <Route path="/shipping" element={<Shipping/>}></Route>
+          <Route path="/order/confirm" element={<ConfirmOrder/>}></Route>
           <Route path="/products/:keyword" element={<Products />}></Route>
           <Route path="/Search" element={<Search />}></Route>
           <Route path="/login" element={<LoginSignUp />}></Route>
