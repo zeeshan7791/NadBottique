@@ -3,5 +3,7 @@ const router = express.Router();
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
 const { processPayment, sendStripeApiKey } = require('../controllers/paymentController');
 
-router.post('/totalbill',isAuthenticatedUser,processPayment)
-router.get('/getkey',sendStripeApiKey)
+router.post('/process',isAuthenticatedUser,processPayment)
+router.get('/stripeapikey',isAuthenticatedUser,sendStripeApiKey)
+
+module.exports=router
