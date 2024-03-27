@@ -10,6 +10,7 @@ const connectDB = require("./config/database");
 const productRoutes = require("./routes/productRoute");
 const userRoutes = require("./routes/userRoute");
 const orderRoutes = require("./routes/orderRoute");
+const paymentRoutes = require("./routes/paymentRoute");
 const cookieParser = require("cookie-parser");
 dotenv.config();
 connectDB();
@@ -46,6 +47,7 @@ app.use(express.static(__dirname + "/public"));
 app.use("/api/product", productRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/order", orderRoutes);
+app.use("/api/payment", paymentRoutes);
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
