@@ -6,7 +6,7 @@ import DashboardIcon from "@material-ui/icons/Dashboard";
 import PersonIcon from "@material-ui/icons/Person";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import ListAltIcon from "@material-ui/icons/ListAlt";
-// import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
+import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import profile from "../../../assets/profile.png";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -16,12 +16,14 @@ import { userActions } from "../../../redux/user/registerUserSlice";
 
 const MenuOption = () => {
   const { currentUser } = useSelector((state) => state.user);
+  const { cartItems } = useSelector((state) => state.cart);
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const options = [
     { icon: <ListAltIcon />, name: "Orders", func: orders },
     { icon: <PersonIcon />, name: "Profile", func: account },
+    { icon: <ShoppingCartIcon style={{color:cartItems.length>0?"tomato":'unset'}} />, name: `Cart(${cartItems.length})`, func:addToCart },
     { icon: <ExitToAppIcon />, name: "Logout", func: logoutUser },
   ];
   if (currentUser.role === "admin") {
@@ -60,6 +62,9 @@ const MenuOption = () => {
   }
   function dashboard() {
     navigate("/dashboard");
+  }
+  function addToCart(){
+    navigate("/cart")
   }
   return (
     <>
