@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const cartSlice = createSlice({
   name: "cart",
-  initialState: { cartItems: [] },
+  initialState: { cartItems: [] ,shippingInfo:{}},
   reducers: {
     ADD_TO_CART: (state, action) => {
       const item = action.payload;
@@ -24,6 +24,9 @@ const cartSlice = createSlice({
     REMOVE_CART_ITEM: (state, action) => {
       state.cartItems = state.cartItems.filter((i) => i.product !== action.payload);
     },
+SAVE_SHIPPING_INFO:(state,action)=>{
+  state.shippingInfo=action.payload
+}
   },
 });
 
