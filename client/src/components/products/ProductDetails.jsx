@@ -1,13 +1,13 @@
 import { useDispatch, useSelector } from "react-redux";
 import MetaData from "../layout/MetaData";
 import Carousel from "react-material-ui-carousel";
-// import {
-//   Dialog,
-//   DialogActions,
-//   DialogContent,
-//   DialogTitle,
-//   Button,
-// } from "@material-ui/core";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
+} from "@material-ui/core";
 import { Rating } from "@material-ui/lab";
 import "./ProductDetails.css";
 import ReviewCard from "./ReviewCard";
@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { serverURL, imageLink } from "../../config/config";
 import { cartItemsAction } from "../../redux/cartItems/cartSlice";
+import { toast } from "react-toastify";
 const ProductDetails = () => {
   const dispatch = useDispatch();
   const params = useParams();
@@ -35,6 +36,9 @@ const ProductDetails = () => {
 
 
   const [quantity, setQuantity] = useState(1);
+  const [open, setOpen] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
 
   const increaseQuantity = () => {
     if (singleProduct.stock <= quantity) return;
@@ -81,8 +85,52 @@ const ProductDetails = () => {
   }
     dispatch(cartItemsAction.ADD_TO_CART(data))
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    toast.success("item added to cart")
+    return
   }
- console.log(singleProduct,'value in single product')
+//  console.log(singleProduct,'value in single product')
+const submitReviewToggle = () => {
+  open ? setOpen(false) : setOpen(true);
+};
+
+const reviewSubmitHandler =async () => {
+ try{
+
+   
+   
+   const res = await fetch(`${serverURL}/product/review`, {
+     method: "POST",
+     headers: {
+       "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        rating,
+        comment,
+        productId
+      }),
+    });
+    const data=await res.json()
+    console.log(data,'review-------')
+    if(data.success==false){
+      toast.error(data.message)
+      return
+
+    }
+    if(data.success){
+toast.success(data.message)
+      setOpen(false);
+    }
+
+    
+  }
+    
+    catch(error){
+      toast.error(error)
+    }
+
+};
+
   return (
     <>
       <MetaData title={`${singleProduct.name} -- ECOMMERCE`} />
@@ -146,16 +194,16 @@ const ProductDetails = () => {
             Description : <p>{productDetails.singleProduct.description}</p>
           </div>
 
-          <button onClick={"submitReviewToggle"} className="submitReview">
+          <button onClick={submitReviewToggle} className="submitReview">
             Submit Review
           </button>
         </div> 
       </div>
       <h3 className="reviewsHeading">REVIEWS</h3>
-       {/* <Dialog
+       <Dialog
         aria-labelledby="simple-dialog-title"
         open={open}
-        onClose={"submitReviewToggle"}
+        onClose={submitReviewToggle}
       >
         <DialogTitle>Submit Review</DialogTitle>
         <DialogContent className="submitDialog">
@@ -169,19 +217,19 @@ const ProductDetails = () => {
             className="submitDialogTextArea"
             cols="30"
             rows="5"
-            // value={comment}
-            // onChange={(e) => setComment(e.target.value)}
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
           ></textarea>
         </DialogContent>
         <DialogActions>
-          <Button onClick={"submitReviewToggle"} color="secondary">
+          <Button onClick={submitReviewToggle} color="secondary">
             Cancel
           </Button>
-          <Button onClick={"reviewSubmitHandler"} color="primary">
+          <Button onClick={reviewSubmitHandler} color="primary">
             Submit
           </Button>
         </DialogActions>
-      </Dialog>  */}
+      </Dialog> 
       {productDetails.singleProduct.reviews &&
       productDetails.singleProduct.reviews[0] ? (
         <div className="reviews">
