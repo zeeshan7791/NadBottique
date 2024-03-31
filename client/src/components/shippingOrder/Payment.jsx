@@ -27,6 +27,7 @@ import { orderActions } from "../../redux/orderDetails/newOrderSlice";
 const Payment = () => {
   const orderInfo = JSON.parse(sessionStorage.getItem("orderInfo"));
 // console.log(orderInfo,'value in orderInfo')
+
   const dispatch = useDispatch();
  const navigate=useNavigate()
   const stripe = useStripe();
@@ -34,6 +35,7 @@ const Payment = () => {
   const payBtn = useRef(null);
 
   const { shippingInfo, cartItems } = useSelector((state) => state.cart);
+ 
   const { currentUser } = useSelector((state) => state.user);
 
 
@@ -51,7 +53,7 @@ const Payment = () => {
   };
 
 const createOrder=async(order)=>{
-  console.log(order,'value in order')
+ 
   const {
     shippingInfo,
     orderItems,
@@ -149,7 +151,7 @@ dispatch(orderActions.CREATE_ORDER_FAIL(error.message))
             status: result.paymentIntent.status,
           };
 
-        //   dispatch(createOrder(order));
+     
         createOrder(order)
 
     
