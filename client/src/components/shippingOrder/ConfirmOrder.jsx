@@ -33,9 +33,7 @@ const navigate=useNavigate()
       tax,
       totalPrice,
     };
-
     sessionStorage.setItem("orderInfo", JSON.stringify(data));
-
     navigate("/process/payment");
   };
 
