@@ -1,24 +1,17 @@
-
-import React, { Fragment, useEffect } from "react";
+/* eslint-disable react/no-unescaped-entities */
 import { DataGrid } from "@material-ui/data-grid";
 import "./MyOrder.css";
 import { useSelector, useDispatch } from "react-redux";
-
 import { Link } from "react-router-dom";
-
 import Typography from "@material-ui/core/Typography";
 import MetaData from "../layout/MetaData";
 import LaunchIcon from "@material-ui/icons/Launch";
 import Loader from "../layout/loader/Loader";
+import { myOrderActions } from "../../redux/orderDetails/myOrderSlice";
+import { serverURL } from "../../config/config";
+import { useEffect } from "react";
 
 const MyOrders = () => {
-  const dispatch = useDispatch();
-
-
-
-//   const { loading, error, orders } = useSelector((state) => state.myOrders);
-  const { currentUser } = useSelector((state) => state.user);
-const loading=false
   const columns = [
     { field: "id", headerName: "Order ID", minWidth: 300, flex: 1 },
 
@@ -65,78 +58,64 @@ const loading=false
       },
     },
   ];
- 
-  const orders = [
-    {
-        "orderItems": [
-            {
-                "pak": "ehh"
-            },
-            {
-                "pak": "ehh"
-            }
-        ],
-        "_id": "849894785978375",
-        "orderStatus": "delivered",
-        "totalPrice": 586
-    },
-    {
-        "orderItems": [
-            {
-                "pak": "ehh"
-            },
-            {
-                "pak": "ehh"
-            }
-        ],
-        "_id": "849894785978375",
-        "orderStatus": "delivered",
-        "totalPrice": 586
-    },
-    {
-        "orderItems": [
-            {
-                "pak": "ehh"
-            },
-            {
-                "pak": "ehh"
-            }
-        ],
-        "_id": "849894785978375",
-        "orderStatus": "delivered",
-        "totalPrice": 566
-    }
-];
+  const dispatch = useDispatch();
 
-let rows = orders.map(item => ({
+  const { isLoading, myOrders } = useSelector((state) => state.myOrders);
+  const { currentUser, isAuthenticated } = useSelector((state) => state.user);
+
+  const showMyOrders = async () => {
+    try {
+      dispatch(myOrderActions.CREATE_MYORDER_REQUEST());
+      const res = await fetch(`${serverURL}/order/my-orders`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      const data = await res.json();
+
+      if (data.success === false) {
+        dispatch(myOrderActions.CREATE_MYORDER_FAIL(data.message));
+        return;
+      }
+      dispatch(myOrderActions.CREATE_MYORDER_SUCCESS(data.orders));
+      return;
+    } catch (error) {
+      dispatch(myOrderActions.CREATE_MYORDER_FAIL(error.message));
+    }
+  };
+
+  useEffect(() => {
+    showMyOrders();
+  }, [dispatch, isAuthenticated]);
+
+  let rows = myOrders.map((item) => ({
     itemsQty: item.orderItems.length,
     id: item._id,
     status: item.orderStatus,
     amount: item.totalPrice,
-}));
-
-console.log(rows,'rows---------'); // Log rows to check if data is correctly populated
-
+  }));
 
   return (
     <>
       <MetaData title={`${currentUser.name} - Orders`} />
 
-      {loading ? (
+      {isLoading ? (
         <Loader />
       ) : (
         <div className="myOrdersPage">
-        <DataGrid
+          <DataGrid
             rows={rows}
             columns={columns}
             pageSize={10}
             disableSelectionOnClick
             className="myOrdersTable"
             autoHeight
-        />
+          />
 
-        <Typography id="myOrdersHeading">{currentUser.name}'s Orders</Typography>
-    </div>
+          <Typography id="myOrdersHeading">
+            {currentUser.name}'s Orders
+          </Typography>
+        </div>
       )}
     </>
   );
