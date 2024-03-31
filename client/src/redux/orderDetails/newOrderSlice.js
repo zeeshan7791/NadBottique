@@ -7,6 +7,8 @@ const newOrderSlice = createSlice({
   reducers: {
     CREATE_ORDER_REQUEST: (state) => {
       state.isLoading = true;
+      state.isError = null;
+     
     },
     CREATE_ORDER_SUCCESS: (state, action) => {
       state.orders = action.payload;

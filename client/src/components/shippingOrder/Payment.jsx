@@ -26,7 +26,7 @@ import { orderActions } from "../../redux/orderDetails/newOrderSlice";
 
 const Payment = () => {
   const orderInfo = JSON.parse(sessionStorage.getItem("orderInfo"));
-console.log(orderInfo,'value in orderInfo')
+// console.log(orderInfo,'value in orderInfo')
   const dispatch = useDispatch();
  const navigate=useNavigate()
   const stripe = useStripe();
@@ -35,7 +35,7 @@ console.log(orderInfo,'value in orderInfo')
 
   const { shippingInfo, cartItems } = useSelector((state) => state.cart);
   const { currentUser } = useSelector((state) => state.user);
-console.log(shippingInfo,currentUser,'both infor')
+
 
   const paymentData = {
     amount: Math.round(orderInfo.totalPrice * 100),
@@ -51,6 +51,16 @@ console.log(shippingInfo,currentUser,'both infor')
   };
 
 const createOrder=async(order)=>{
+  console.log(order,'value in order')
+  const {
+    shippingInfo,
+    orderItems,
+    paymentInfo,
+    itemsPrice,
+    taxPrice,
+    shippingPrice,
+    totalPrice,
+  } = order;
   try{
 dispatch(orderActions.CREATE_ORDER_REQUEST())
 const res = await fetch(`${serverURL}/order/create-order`, {
@@ -60,10 +70,17 @@ const res = await fetch(`${serverURL}/order/create-order`, {
   },
   credentials: "include",
   body: JSON.stringify({
-    order
+    shippingInfo,
+    orderItems,
+    paymentInfo,
+    itemsPrice,
+    taxPrice,
+    shippingPrice,
+    totalPrice,
   })
 });
 const data=await res.json()
+
 if(data.success===false){
   toast.error(data.message)
   return
@@ -71,6 +88,8 @@ if(data.success===false){
 if(data.success){
   dispatch(orderActions.CREATE_ORDER_SUCCESS(data))
   toast.success(data.message)
+  navigate("/success");
+
   return
 }
 
@@ -79,21 +98,18 @@ if(data.success){
 dispatch(orderActions.CREATE_ORDER_FAIL(error.message))
   }
 }
-const yourApiKeyHere="sk_test_51LzNIqH7XEPQOoZkzQADN5PuguZbe2DU8cTVPx0bndcnPCgPSrYuZQAO4GJLUrGsWiqoHcsm1cM2WW2mP16CaWUE00jzm6pwGE"
   const submitHandler = async (e) => {
     e.preventDefault();
 
     payBtn.current.disabled = true;
 
-    try {
-      
-    
+    try { 
     
       const res = await fetch(`${serverURL}/payment/process`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${yourApiKeyHere}`
+        
         },
         credentials: "include",
         body:JSON.stringify(paymentData),
@@ -121,6 +137,7 @@ const yourApiKeyHere="sk_test_51LzNIqH7XEPQOoZkzQADN5PuguZbe2DU8cTVPx0bndcnPCgPS
         },
       });
 
+
       if (result.error) {
         payBtn.current.disabled = false;
 
@@ -135,7 +152,7 @@ const yourApiKeyHere="sk_test_51LzNIqH7XEPQOoZkzQADN5PuguZbe2DU8cTVPx0bndcnPCgPS
         //   dispatch(createOrder(order));
         createOrder(order)
 
-          navigate("/success");
+    
         } else {
           toast.error("There's some issue while processing payment ");
         }
