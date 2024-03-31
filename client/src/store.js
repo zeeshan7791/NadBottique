@@ -6,12 +6,19 @@ import allProductsSlice from "./redux/products/allProductsSlice";
 import productDetailsSlice from "./redux/products/productDetailsSlice";
 import registerUserSlice from "./redux/user/registerUserSlice";
 import cartSlice from "./redux/cartItems/cartSlice";
+import newOrderSlice from "./redux/orderDetails/newOrderSlice";
+import myOrderSlice from "./redux/orderDetails/myOrderSlice";
+import orderDetailsSlice from "./redux/orderDetails/orderDetailsSlice";
+
 
 const rootReducer = combineReducers({
   user: registerUserSlice,
   allProducts: allProductsSlice,
   productDetails: productDetailsSlice,
-  cart:cartSlice
+  cart:cartSlice,
+  newOrder:newOrderSlice,
+  myOrders:myOrderSlice,
+  orderDetails:orderDetailsSlice,
 });
 const persistConfig = {
   key: "root",
