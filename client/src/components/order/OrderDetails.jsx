@@ -2,57 +2,55 @@
 import "./OrderDetails.css";
 // import { useSelector, useDispatch } from "react-redux";
 import MetaData from "../layout/MetaData";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Typography } from "@material-ui/core";
 import Loader from "../layout/loader/Loader";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { orderDetailsActions } from "../../redux/orderDetails/orderDetailsSlice";
+import { imageLink, serverURL } from "../../config/config";
 
 
 const OrderDetails = () => {
-//   const { order, error, loading } = useSelector((state) => state.orderDetails);
+  
 
 //   const dispatch = useDispatch();
+const params=useParams()
 
+  
+  const dispatch=useDispatch()
+  const { orderDetails,isLoading } = useSelector((state) => state.orderDetails);
+  const {isAuthenticated } = useSelector((state) => state.user);
+  
+  const showOrderDetails = async () => {
+    try {
+      dispatch(orderDetailsActions.CREATE_ORDERDETAILS_REQUEST());
+      const res = await fetch(`${serverURL}/order/order-details/${params.id}`,{
+        method: "GET",
+        credentials: "include",
+      });
 
-  const loading=false
-  const order={
-    "_id": "60f2e89b1c05540015a34e44",
-    "user": {
-      "name": "John Doe"
-    },
-    "shippingInfo": {
-      "phoneNo": "+1234567890",
-      "address": "123 Main Street",
-      "city": "Anytown",
-      "state": "ABC",
-      "pinCode": "12345",
-      "country": "Country X"
-    },
-    "paymentInfo": {
-      "status": "succeeded"
-    },
-    "totalPrice": 100,
-    "orderStatus": "Delivered",
-    "orderItems": [
-      {
-        "product": "60f2e89b1c05540015a34e45",
-        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ21UFvcUnCKJlS6CzgllslS-3_iBiAkr_jVTFjzM19-g&s",
-        "name": "Product 1",
-        "quantity": 2,
-        "price": 50
-      },
-      {
-        "product": "60f2e89b1c05540015a34e46",
-        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwiHvgIobm6r4qOSM6Nl4c_vCmWsNuW1JXdiQtKRAWRg&s",
-        "name": "Product 2",
-        "quantity": 1,
-        "price": 100
+      const data = await res.json();
+
+      if (data.success === false) {
+        dispatch(orderDetailsActions.CREATE_ORDERDETAILS_FAIL(data.message));
+        return;
       }
-    ]
-  }
+      dispatch(orderDetailsActions.CREATE_ORDERDETAILS_SUCCESS(data));
+      return;
+    } catch (error) {
+      dispatch(orderDetailsActions.CREATE_ORDERDETAILS_FAIL(error.message));
+    }
+  };
+
+  useEffect(() => {
+    showOrderDetails();
+  }, [dispatch,isAuthenticated]);
+  const {order}=orderDetails
   
   return (
     <>
-      {loading ? (
+      {isLoading ? (
         <Loader />
       ) : (
         <>
@@ -128,7 +126,7 @@ const OrderDetails = () => {
                 {order.orderItems &&
                   order.orderItems.map((item) => (
                     <div key={item.product}>
-                      <img src={item.image} alt="Product" />
+                      <img src={imageLink+item.image} alt="Product" />
                       <Link to={`/product/${item.product}`}>
                         {item.name}
                       </Link>{" "}
