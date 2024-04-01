@@ -1,20 +1,17 @@
 import { useState } from "react";
 import "./NewProduct.css";
-import { useSelector, useDispatch } from "react-redux";
-
 import { Button } from "@material-ui/core";
 import MetaData from "../components/layout/MetaData";
-
 import AccountTreeIcon from "@material-ui/icons/AccountTree";
 import DescriptionIcon from "@material-ui/icons/Description";
 import StorageIcon from "@material-ui/icons/Storage";
 import SpellcheckIcon from "@material-ui/icons/Spellcheck";
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import SideBar from "./Sidebar";
-
-
+import { serverURL } from "../config/config";
+import {toast} from "react-toastify"
 const NewProduct = () => {
-  const dispatch = useDispatch();
+
   
 
 
@@ -24,7 +21,7 @@ const NewProduct = () => {
   const [category, setCategory] = useState("");
   const [stock, setStock] = useState(0);
   const [images, setImages] = useState([]);
-  const [imagesPreview, setImagesPreview] = useState([]);
+
   const [loading, setLoading] = useState(false);
 
   const categories = [
@@ -39,26 +36,45 @@ const NewProduct = () => {
 
  
 
-  const createProductSubmitHandler = (e) => {
+  const createProductSubmitHandler = async(e) => {
     e.preventDefault();
-
     const myForm = new FormData();
-
     myForm.append("name", name);
     myForm.append("price", price);
     myForm.append("description", description);
     myForm.append("category", category);
     myForm.append("stock", stock);
-
-    images.forEach((image) => {
-      myForm.append("images", image);
+    for (let i = 0; i < images.length; i++) {
+      myForm.append("pictures", images[i]);
+      console.log(images[i]);
+    }
+    try{
+      setLoading(true)
+    const res = await fetch(`${serverURL}/product/create-product`, {
+      method: "POST",
+      credentials: "include",
+      body:myForm
     });
-   
+    const data=await res.json()
+    setLoading(false)
+    if(data.success===false){
+      toast.error(data.message)
+      return
+    }
+    if(data.success){
+      toast.success(data.message)
+      return
+    }
+  }
+    catch(error){
+      setLoading(false)
+      toast.error(error)
+    }
   };
 
   const createProductImagesChange = (e) => {
     // const files = Array.from(e.target.files);
-
+    setImages(e.target.files)
     // setImages([]);
     // setImagesPreview([]);
 
@@ -75,6 +91,10 @@ const NewProduct = () => {
     //   reader.readAsDataURL(file);
     // });
   };
+
+const imageUrls = Array.from(images).map((file) =>
+URL.createObjectURL(file)
+);
 
   return (
     <>
@@ -154,7 +174,7 @@ const NewProduct = () => {
             </div>
 
             <div id="createProductFormImage">
-              {imagesPreview.map((image, index) => (
+              {imageUrls.map((image, index) => (
                 <img key={index} src={image} alt="Product Preview" />
               ))}
             </div>
