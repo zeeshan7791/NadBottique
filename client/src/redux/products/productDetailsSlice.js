@@ -18,7 +18,7 @@ const productDetailsSlice = createSlice({
       state.isLoading = false;
     },
     [PRODUCT_DETAILS_FAIL]: (state, action) => {
-      (state.isError = action.payload), (state.isLoading = null);
+      (state.isError = action.payload), (state.isLoading = false);
     },
   },
 });
