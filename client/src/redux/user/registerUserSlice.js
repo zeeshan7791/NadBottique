@@ -7,6 +7,7 @@ import {
 const initialState = {
   currentUser: null,
   isAuthenticated: false,
+  token: null,
   error: null,
   loading: false,
 };
@@ -18,11 +19,12 @@ const userSlice = createSlice({
     [signInStart]: (state) => {
       state.loading = true;
       state.isAuthenticated = false;
+      state.token = null;
     },
     [signInSuccess]: (state, action) => {
       state.currentUser = action.payload.rest;
       state.isAuthenticated = true;
-      state.error = null;
+      (state.token = action.payload.token), (state.error = null);
       state.loading = false;
     },
     [signInFailure]: (state, action) => {
