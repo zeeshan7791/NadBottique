@@ -95,8 +95,6 @@ const submitReviewToggle = () => {
 
 const reviewSubmitHandler =async () => {
  try{
-
-   
    
    const res = await fetch(`${serverURL}/product/review`, {
      method: "POST",
@@ -111,13 +109,14 @@ const reviewSubmitHandler =async () => {
       }),
     });
     const data=await res.json()
-    console.log(data,'review-------')
+  
     if(data.success==false){
       toast.error(data.message)
       return
 
     }
     if(data.success){
+      showProductDetails(productId)
 toast.success(data.message)
       setOpen(false);
     }
