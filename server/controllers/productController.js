@@ -69,6 +69,35 @@ const getAllProducts = async (req, res, next) => {
     return next(error);
   }
 };
+
+// getAdminProduct
+const adminAllProducts = async (req, res, next) => {
+  try {
+ 
+  
+   
+    let products = await Product.find();
+
+  
+    if (!products) {
+      return res.status(401).json({
+        success: true,
+        message: "no products found",
+      });
+    }
+console.log(products,'value in product')
+
+    return res.status(200).json({
+      success: true,
+      message: "products fetched successfully",
+      products,
+   
+    
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
 // getSingleProduct
 
 const getSingleProduct = async (req, res, next) => {
@@ -142,6 +171,7 @@ const deleteProduct = async (req, res, next) => {
 
 const createProductReview = async (req, res, next) => {
   const { rating, comment, productId } = req.body;
+  console.log(req.body)
   const review = {
     user: req.user._id,
     name: req.user.name,
@@ -152,23 +182,25 @@ const createProductReview = async (req, res, next) => {
   if (!product) {
     return next(errorHandler(404, "product not found"));
   }
+  console.log(product,'value in product--------')
   try {
-    const isReviewed = product.numOfReviews.find(
+    const isReviewed = product.reviews.find(
       (rev) => rev.user.toString() === req.user._id.toString()
     );
+console.log(isReviewed,'isReviewed')
 
     if (isReviewed) {
-      product.numOfReviews.forEach((rev) => {
+      product.reviews.forEach((rev) => {
         if (rev.user.toString() === req.user._id.toString())
           (rev.rating = rating), (rev.comment = comment);
       });
     } else {
-      product.numOfReviews.push(review);
+      product.reviews.push(review);
       product.numOfReviews = product.reviews.length;
     }
     let avg = 0;
     product.reviews.forEach((rev) => {
-      avg += rev.ratings;
+      avg += rev.rating;
     });
     product.ratings = avg / product.reviews.length;
 
@@ -244,4 +276,5 @@ module.exports = {
   createProductReview,
   getAllReviews,
   deleteReviews,
+  adminAllProducts,
 };

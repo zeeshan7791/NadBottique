@@ -8,6 +8,7 @@ const {
   createProductReview,
   getAllReviews,
   deleteReviews,
+  adminAllProducts,
 } = require("../controllers/productController");
 const upload = require("../middleware/upload");
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");
@@ -32,6 +33,12 @@ router.get(
   "/all-products",
 
   getAllProducts
+);
+router.get(
+  "/admin-products",
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
+  adminAllProducts
 );
 router.get("/single-product/:id", getSingleProduct);
 router.delete(
