@@ -12,7 +12,7 @@ const createNewOrder = async (req, res, next) => {
     shippingPrice,
     totalPrice,
   } = req.body;
-
+console.log(req.body)
   try {
     const order = await Order.create({
       shippingInfo,
@@ -28,6 +28,7 @@ const createNewOrder = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
+      message:"Order created",
       order,
     });
   } catch (error) {
@@ -43,7 +44,7 @@ const getSingleOrder = async (req, res, next) => {
     );
 
     if (!order) {
-      return next(new ErrorHander("Order not found with this Id", 404));
+      return next(new errorHandler("Order not found with this Id", 404));
     }
 
     res.status(200).json({
