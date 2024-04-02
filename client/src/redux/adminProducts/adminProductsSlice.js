@@ -13,6 +13,11 @@ const adminProductsSlice = createSlice({
       state.isError = null;
       state.isLoading = false;
     },
+    DELETE_PRODUCT_SUCCESS: (state,action) => {
+      state.products = state.products.filter((product) => product._id !== action.payload);
+      state.isError = null;
+      state.isLoading = false;
+    },
     ADMIN_PRODUCT_FAIL: (state, action) => {
       (state.isError = action.payload), (state.isLoading = false);
     },

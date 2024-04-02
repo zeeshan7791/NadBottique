@@ -3,7 +3,7 @@ import { DataGrid } from "@material-ui/data-grid";
 import "./ProductList.css";
 import { useSelector, useDispatch } from "react-redux";
 
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import { Button } from "@material-ui/core";
 
@@ -15,13 +15,14 @@ import { useEffect } from "react";
 import { adminProductsActions } from "../redux/adminProducts/adminProductsSlice";
 import { serverURL } from "../config/config";
 import Loader from "../components/layout/loader/Loader";
+import {toast} from "react-toastify"
 
 const ProductList = () => {
   const dispatch=useDispatch()
 
-//  const navigate=useNavigate()
+ 
 
-  const {  products ,isLoading,isError} = useSelector((state) => state.adminAllProducts);
+  const {  products ,isLoading} = useSelector((state) => state.adminAllProducts);
   const showAdminProducts = async () => {
     try {
       dispatch(adminProductsActions.ADMIN_PRODUCT_REQUEST());
@@ -48,9 +49,34 @@ const ProductList = () => {
     showAdminProducts();
   }, [dispatch]);
 
-  const deleteProductHandler = (id) => {
-    // dispatch(deleteProduct(id));
-    console.log(id)
+  const deleteProductHandler =async (id) => {
+    
+    
+    try {
+      
+   
+      const res = await fetch(`${serverURL}/product/delete/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      const data = await res.json();
+
+      if (data.success === false) {
+        toast.error(data.message)
+        
+        return;
+      }
+      
+     dispatch(adminProductsActions.DELETE_PRODUCT_SUCCESS(id));
+      toast.success(data.message)
+
+      return;
+    } catch (error) {
+      toast.error(error)
+     
+    }
+    
   };
 
 
