@@ -91,4 +91,4 @@ const orderSchema = new mongoose.Schema({
   },
 });
 
-module.export = mongoose.model("Order", orderSchema);
+module.exports = mongoose.model("Order", orderSchema);
