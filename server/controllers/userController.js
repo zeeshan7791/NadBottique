@@ -69,16 +69,18 @@ const logoutUser = async (req, res, next) => {
   }
 };
 const forgetPassword = async (req, res, next) => {
+  console.log("hello");
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
     return next(errorHandler(401, "User not found"));
   }
   const resetToken = user.getResetPasswordToken();
+  console.log(resetToken, "reset0--------");
+  console.log(user);
   await user.save({ validateBeforeSave: false });
-  const resetPasswordURL = `${req.protocol}://${req.get(
-    "host"
-  )}/api/v1/password/${resetToken}`;
-  const message = `Your Password reset token is :- \n\n ${resetPasswordURL}\n\n if you have not requested this email then please ignore it.`;
+  const resetPasswordUrl = `http://127.0.0.1:5173/password/reset/${resetToken}`;
+
+  const message = `Your password reset token is :- \n\n ${resetPasswordUrl} \n\nIf you have not requested this email then, please ignore it.`;
 
   try {
     await sendEmail({
@@ -219,10 +221,11 @@ const updateProfile = async (req, res, next) => {
 };
 const updateRole = async (req, res, next) => {
   try {
+    
     const { name, email, role } = req.body;
     console.log(req.params.id);
     const user = await User.findById(req.params.id);
-    console.log(user);
+  
     if (!user) {
       return next(errorHandler(404, "user not found"));
     }
