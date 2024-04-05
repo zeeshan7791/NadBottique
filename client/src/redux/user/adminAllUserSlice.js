@@ -11,9 +11,15 @@ import { createSlice } from "@reduxjs/toolkit";
         state.isError = null;
         state.isLoading = false;
       },
+      ADMIN_DELETEUSER_SUCCESS: (state,action) => {
+        state.allUsers = state.allUsers.filter((user) => user._id !== action.payload);
+        state.isError = null;
+        state.isLoading = false;
+      },
       ADMIN_ALLUSERS_FAIL: (state, action) => {
         (state.isError = action.payload), (state.isLoading = null);
       },
+      
     },
   });
   export const allUsersActions = adminAllUserSlice.actions;
