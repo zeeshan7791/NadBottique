@@ -25,7 +25,8 @@ const ProductDetails = () => {
   const productId = params.productId;
   const { productDetails } = useSelector((state) => state.productDetails);
   const { cartItems } = useSelector((state) => state.cart);
-  console.log(productDetails, "productDetails");
+  const { currentUser } = useSelector((state) => state.user);
+
   const { singleProduct } = productDetails;
   const options = {
     size: "large",
@@ -88,8 +89,12 @@ const ProductDetails = () => {
     toast.success("item added to cart")
     return
   }
-//  console.log(singleProduct,'value in single product')
+
 const submitReviewToggle = () => {
+  if(!currentUser){
+  return  toast.error("please login first")
+  
+  }
   open ? setOpen(false) : setOpen(true);
 };
 
