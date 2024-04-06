@@ -39,7 +39,7 @@ const Home = () => {
   useEffect(() => {
     showAllProducts();
   }, [dispatch]);
-  console.log(allProducts, "value in all products");
+ 
   return (
     <>
       {loading ? (
