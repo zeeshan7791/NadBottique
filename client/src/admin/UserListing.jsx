@@ -12,6 +12,7 @@ import SideBar from "./Sidebar";
 import MetaData from "../components/layout/MetaData";
 import { allUsersActions } from "../redux/user/adminAllUserSlice";
 import { serverURL } from "../config/config";
+import { toast } from "react-toastify";
 
 
 const UsersList = () => {
@@ -45,11 +46,34 @@ const UsersList = () => {
 
 
 
-  const deleteUserHandler = () => {
-    // dispatch(deleteUser(id));
+  const deleteUserHandler = async(id) => {
+    try {
+      
+   
+      const res = await fetch(`${serverURL}/user/remove/${id}`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      const data = await res.json();
+
+      if (data.success === false) {
+        toast.error(data.message)
+        
+        return;
+      }
+      
+     dispatch(allUsersActions.ADMIN_DELETEUSER_SUCCESS(id));
+      toast.success(data.message)
+
+      return;
+    } catch (error) {
+      toast.error(error)
+     
+    }
   };
 
-console.log("allUsers---",allUsers)
+
 
   const columns = [
     { field: "id", headerName: "User ID", minWidth: 180, flex: 0.8 },
