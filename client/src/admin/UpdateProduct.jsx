@@ -1,5 +1,5 @@
 import  {  useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import {  useDispatch } from "react-redux";
 import "./ProductList.css";
 
 import { Button } from "@material-ui/core";
@@ -14,21 +14,21 @@ import {toast} from "react-toastify"
 import MetaData from "../components/layout/MetaData";
 import { useNavigate, useParams } from "react-router-dom";
 import { productDetailsAction } from "../redux/products/productDetailsSlice";
+import Loader from "../components/layout/loader/Loader";
 const UpdateProduct = () => {
   const dispatch = useDispatch();
 
 const params=useParams()
   
-const { productDetails } = useSelector((state) => state.productDetails);
-const { singleProduct } = productDetails;
 
-  const [name, setName] = useState(singleProduct.name);
-  const [price, setPrice] = useState(singleProduct.price);
-  const [description, setDescription] = useState(singleProduct.description);
-  const [category, setCategory] = useState(singleProduct.category);
-  const [stock, setStock] = useState(singleProduct.stock);
+
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
+  const [stock, setStock] = useState("");
   const [images, setImages] = useState([]);
-  const [oldImages, setOldImages] = useState(singleProduct.pictures);
+  const [oldImages, setOldImages] = useState([]);
   
   const [loading, setLoading] = useState(false);
 
@@ -43,27 +43,40 @@ const { singleProduct } = productDetails;
   ];
 const navigate=useNavigate()
   const productId = params.id;
-  const showProductDetails = async (productId) => {
-    try {
-      dispatch(productDetailsAction.PRODUCT_DETAILS_REQUEST());
+  useEffect(() => {
+    const showProductDetails = async (productId) => {
+      try {
+        setLoading(true)
+        dispatch(productDetailsAction.PRODUCT_DETAILS_REQUEST());
+  
+        const res = await fetch(`${serverURL}/product/single-product/${productId}`);
+        const data = await res.json();
+  
+        if (data.success === false) {
+          dispatch(productDetailsAction.PRODUCT_DETAILS_FAIL(data.message));
+          return;
+        }
+  
+        const { name, price, description, category, stock, pictures } = data.singleProduct;
+  
+        setName(name);
+        setPrice(price);
+        setDescription(description);
+        setCategory(category);
+        setStock(stock);
+        setOldImages(pictures);
+        dispatch(productDetailsAction.PRODUCT_DETAILS_SUCCESS(data));
+        setLoading(false)
+      } catch (error) {
+        setLoading(false)
 
-      const res = await fetch(`${serverURL}/product/single-product/${productId}`
-      );
-      const data = await res.json();
-
-      if (data.success === false) {
-        dispatch(productDetailsAction.PRODUCT_DETAILS_FAIL(data.message));
-        return;
+        dispatch(productDetailsAction.ALL_PRODUCT_FAIL(error.message));
       }
-      dispatch(productDetailsAction.PRODUCT_DETAILS_SUCCESS(data));
-    } catch (error) {
-      dispatch(productDetailsAction.ALL_PRODUCT_FAIL(error.message));
-    }
-  };
-
-useEffect(() => {
+    };
+  
     showProductDetails(productId);
-  }, [dispatch, productId]);
+  }, [dispatch, productId, productDetailsAction]);
+  
   const updateProductSubmitHandler = async (e) => {
     e.preventDefault();
   
@@ -76,7 +89,7 @@ useEffect(() => {
   
     for (const image of images) {
       formData.append("pictures", image);
-      console.log(image);
+    
     }
   
     try {
@@ -119,6 +132,9 @@ useEffect(() => {
       <div className="dashboard">
         <SideBar />
         <div className="newProductContainer">
+        {loading ? (
+            <Loader />
+          ) : (
     <form className="createProductForm" encType="multipart/form-data" onSubmit={updateProductSubmitHandler}>
       <h1>Create Product</h1>
 
@@ -204,6 +220,7 @@ useEffect(() => {
 
       <Button id="createProductBtn"  disabled={loading ? true : false} type="submit">Update</Button>
     </form>
+       )}
   </div>
       </div>
     </>
