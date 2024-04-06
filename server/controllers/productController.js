@@ -151,7 +151,7 @@ const updateProduct = async (req, res, next) => {
 
 // admin delete-Product
 const deleteProduct = async (req, res, next) => {
-  console.log(req.params.id)
+
   const findProduct = await Product.findById(req.params.id);
 
   if (!findProduct) {
@@ -172,7 +172,7 @@ const deleteProduct = async (req, res, next) => {
 
 const createProductReview = async (req, res, next) => {
   const { rating, comment, productId } = req.body;
-  console.log(req.body)
+
   const review = {
     user: req.user._id,
     name: req.user.name,
@@ -188,7 +188,7 @@ const createProductReview = async (req, res, next) => {
     const isReviewed = product.reviews.find(
       (rev) => rev.user.toString() === req.user._id.toString()
     );
-console.log(isReviewed,'isReviewed')
+
 
     if (isReviewed) {
       product.reviews.forEach((rev) => {
@@ -233,8 +233,7 @@ const getAllReviews = async (req, res, next) => {
 const deleteReview = async (req, res, next) => {
   try {
     // Find the product by productId
-    console.log(req.query.productId,'value in product id---------')
-    console.log(req.query.id,'value in req.query.id id---------')
+   
     const product = await Product.findById(req.query.productId);
 
     if (!product) {
