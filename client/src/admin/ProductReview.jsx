@@ -142,7 +142,7 @@ const ProductReviews = () => {
         user: item.name,
       });
     });
-console.log(reviews,'value in reviews')
+
   return (
     <>
       <MetaData title={`ALL REVIEWS - Admin`} />
