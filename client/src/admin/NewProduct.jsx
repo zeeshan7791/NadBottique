@@ -10,9 +10,10 @@ import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import SideBar from "./Sidebar";
 import { serverURL } from "../config/config";
 import {toast} from "react-toastify"
+import { useNavigate } from "react-router-dom";
 const NewProduct = () => {
 
-  
+  const navigate=useNavigate()
 
 
   const [name, setName] = useState("");
@@ -46,7 +47,7 @@ const NewProduct = () => {
     myForm.append("stock", stock);
     for (let i = 0; i < images.length; i++) {
       myForm.append("pictures", images[i]);
-      console.log(images[i]);
+
     }
     try{
       setLoading(true)
@@ -63,6 +64,8 @@ const NewProduct = () => {
     }
     if(data.success){
       toast.success(data.message)
+      navigate("/admin/products");
+
       return
     }
   }
