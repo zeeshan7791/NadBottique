@@ -24,9 +24,16 @@ const cartSlice = createSlice({
     REMOVE_CART_ITEM: (state, action) => {
       state.cartItems = state.cartItems.filter((i) => i.product !== action.payload);
     },
+    REMOVE_ALLCART_ITEM: (state) => {
+      state.cartItems =[];
+    },
+   
 SAVE_SHIPPING_INFO:(state,action)=>{
   state.shippingInfo=action.payload
-}
+},
+REMOVE_ALLSHIPPING_INFO: (state) => {
+  state.shippingInfo ={};
+},
   },
 });
 
