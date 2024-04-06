@@ -35,7 +35,7 @@ const Products = () => {
   const { allProducts, loading } = useSelector((state) => state.allProducts);
   const params = useParams();
   const keyword = params.keyword;
-  console.log(keyword, "value in keyword");
+ 
   const setCurrentPageNo = (e) => {
     setCurrentPage(e);
   };
@@ -61,10 +61,10 @@ const Products = () => {
       }
 
       const res = await fetch(link);
-      // const res = await fetch(`${serverURL}/product/all-products`);
+     
 
       const data = await res.json();
-      console.log(data, "value in data------");
+      
       if (data.success === false) {
         dispatch(allProductsActions.ALL_PRODUCT_FAIL(data.message));
         return;
@@ -78,7 +78,7 @@ const Products = () => {
   useEffect(() => {
     showAllProducts(keyword, currentPage, price, category, ratings);
   }, [dispatch, keyword, currentPage, price, category, ratings]);
-  console.log(category);
+
   return (
     <>
       {loading ? (
