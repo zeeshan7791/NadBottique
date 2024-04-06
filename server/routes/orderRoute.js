@@ -17,6 +17,7 @@ const {
   myOrders,
   updateOrder,
   getAllorders,
+  deleteOrder,
 } = require("../controllers/orderController");
 const { deleteUser } = require("../controllers/userController");
 
@@ -35,8 +36,8 @@ router.get(
   getSingleOrder
 );
 router.get("/my-orders", isAuthenticatedUser, myOrders);
-router.get(
-  "/update-orders",
+router.post(
+  "/update-order/:id",
   isAuthenticatedUser,
   authorizeRoles("admin"),
   updateOrder
@@ -47,11 +48,11 @@ router.get(
   authorizeRoles("admin"),
   getAllorders
 );
-router.get(
-  "/delete-order",
+router.delete(
+  "/delete-order/:id",
   isAuthenticatedUser,
   authorizeRoles("admin"),
-  deleteUser
+  deleteOrder
 );
 
 module.exports = router;
