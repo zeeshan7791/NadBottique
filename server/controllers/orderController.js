@@ -13,7 +13,7 @@ const createNewOrder = async (req, res, next) => {
     shippingPrice,
     totalPrice,
   } = req.body;
-console.log(req.body)
+
   try {
     const order = await Order.create({
       shippingInfo,
@@ -93,7 +93,7 @@ const getAllorders = async (req, res, next) => {
 const updateOrder = async (req, res, next) => {
   try {
    
-    console.log(req.body.status ,'value in status')
+  
     
     const order = await Order.findById(req.params.id);
   
