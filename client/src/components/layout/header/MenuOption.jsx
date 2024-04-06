@@ -61,7 +61,7 @@ const MenuOption = () => {
     }
   }
   function dashboard() {
-    navigate("/dashboard");
+    navigate("/admin/dashboard");
   }
   function addToCart(){
     navigate("/cart")
