@@ -85,7 +85,7 @@ const adminAllProducts = async (req, res, next) => {
         message: "no products found",
       });
     }
-console.log(products,'value in product')
+
 
     return res.status(200).json({
       success: true,
@@ -151,6 +151,7 @@ const updateProduct = async (req, res, next) => {
 
 // admin delete-Product
 const deleteProduct = async (req, res, next) => {
+  console.log(req.params.id)
   const findProduct = await Product.findById(req.params.id);
 
   if (!findProduct) {
@@ -182,7 +183,7 @@ const createProductReview = async (req, res, next) => {
   if (!product) {
     return next(errorHandler(404, "product not found"));
   }
-  console.log(product,'value in product--------')
+
   try {
     const isReviewed = product.reviews.find(
       (rev) => rev.user.toString() === req.user._id.toString()
@@ -229,44 +230,48 @@ const getAllReviews = async (req, res, next) => {
   }
 };
 
-const deleteReviews = async (req, res, next) => {
-  const product = await Product.findById(req.query.id);
-  if (!product) {
-    return next(errorHandler(404, "product not found"));
-  }
-
+const deleteReview = async (req, res, next) => {
   try {
-    const reviews = product.reviews.filter((rev) => {
-      rev._id.toString() !== req.query.id.toString();
-    });
-    let avg = 0;
+    // Find the product by productId
+    console.log(req.query.productId,'value in product id---------')
+    console.log(req.query.id,'value in req.query.id id---------')
+    const product = await Product.findById(req.query.productId);
 
-    reviews.forEach((rev) => {
-      avg += rev.rating;
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    // Filter out the review to be deleted
+    product.reviews = product.reviews.filter(
+      (review) => review._id.toString() !== req.query.id.toString()
+    );
+
+    // Calculate average rating and number of reviews
+    let totalRating = 0;
+    product.reviews.forEach((review) => {
+      totalRating += review.rating;
     });
-    const ratings = avg / reviews.length;
-    const numOfReviews = reviews.length;
+    const averageRating = product.reviews.length > 0 ? totalRating / product.reviews.length : 0;
+    const numOfReviews = product.reviews.length;
+
+    // Update product document in the database
     await Product.findByIdAndUpdate(
       req.query.productId,
       {
-        reviews,
-        ratings,
-        numOfReviews,
+        reviews: product.reviews,
+        ratings: averageRating,
+        numOfReviews: numOfReviews,
       },
-      {
-        new: true,
-        runValidators: true,
-        useFindAndModify: false,
-      }
+      { new: true }
     );
-    return res.status(200).json({
-      success: true,
-      message: "review deleted successfully",
-    });
+
+   return res.status(200).json({ success: true,message:"review deleted successfully" });
   } catch (error) {
-    return next(error);
+    // Handle any errors
+    next(error);
   }
 };
+
 module.exports = {
   createProduct,
   updateProduct,
@@ -275,6 +280,6 @@ module.exports = {
   getSingleProduct,
   createProductReview,
   getAllReviews,
-  deleteReviews,
+  deleteReview,
   adminAllProducts,
 };

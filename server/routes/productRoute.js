@@ -7,7 +7,7 @@ const {
   getSingleProduct,
   createProductReview,
   getAllReviews,
-  deleteReviews,
+  deleteReview,
   adminAllProducts,
 } = require("../controllers/productController");
 const upload = require("../middleware/upload");
@@ -53,10 +53,9 @@ router.post(
 
   createProductReview
 );
-router.post(
-  "/reviews",
-
+router.get(
+  "/all-reviews",
   getAllReviews
 );
-router.delete("/reviews", deleteReviews);
+router.delete("/delete-review", deleteReview);
 module.exports = router;
