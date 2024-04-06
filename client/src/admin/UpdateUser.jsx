@@ -1,5 +1,5 @@
 import  { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import {  useDispatch } from "react-redux";
 
 import { Button } from "@material-ui/core";
 
@@ -7,28 +7,51 @@ import MailOutlineIcon from "@material-ui/icons/MailOutline";
 import PersonIcon from "@material-ui/icons/Person";
 import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
 import SideBar from "./Sidebar";
-
-
 import { useNavigate, useParams } from "react-router-dom";
 import MetaData from "../components/layout/MetaData";
 import Loader from "../components/layout/loader/Loader";
 import { serverURL } from "../config/config";
 import { toast } from "react-toastify";
+import { userDetailsActions } from "../redux/user/userDetailsSlice";
 
 const UpdateUser = () => {
   const dispatch = useDispatch();
   const navigate=useNavigate()
-  const [loading, setLoading] = useState(false);
-
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState("");
-const params=useParams()
+  const params=useParams()
   const userId = params.id;
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [role, setRole] = useState('');
+ 
 
-console.log(name)
-console.log(email)
-console.log(role)
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        dispatch(userDetailsActions.ADMIN_USERDETAILS_REQUEST());
+        const res = await fetch(`${serverURL}/user/details/${userId}`, {
+          method: "GET",
+          credentials: "include",
+        });
+        const data = await res.json();
+  
+        if (data.success === false) {
+          dispatch(userDetailsActions.ADMIN_USERDETAILS_FAIL(data.message));
+          return;
+        }
+       
+        setName(data.user.name);
+        setEmail(data.user.email);
+        setRole(data.user.role);
+        dispatch(userDetailsActions.ADMIN_USERDETAILS_SUCCESS(data.user));
+      } catch (error) {
+        dispatch(userDetailsActions.ADMIN_USERDETAILS_FAIL(error.message));
+      }
+    };
+  
+    fetchUserDetails();
+  }, [dispatch, userId]);
   const updateUserSubmitHandler = async(e) => {
     e.preventDefault();
 
@@ -68,7 +91,7 @@ console.log(role)
       <div className="dashboard">
         <SideBar />
         <div className="newProductContainer">
-          {loading ? (
+        {loading ? (
             <Loader />
           ) : (
             <form

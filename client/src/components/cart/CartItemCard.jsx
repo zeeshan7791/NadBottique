@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { imageLink } from "../../config/config";
 
 const CartItemCard = ({ item, deleteCartItems }) => {
-  console.log(item, 'value in item');
+
   return (
     <div className="CartItemCard">
       <img src={imageLink + item.image} alt="ssa" />
