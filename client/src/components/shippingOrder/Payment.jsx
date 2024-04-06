@@ -23,10 +23,11 @@ import { useNavigate } from "react-router-dom";
 import CheckoutSteps from "./CheckoutSteps";
 import MetaData from "../layout/MetaData";
 import { orderActions } from "../../redux/orderDetails/newOrderSlice";
+import { cartItemsAction } from "../../redux/cartItems/cartSlice";
 
 const Payment = () => {
   const orderInfo = JSON.parse(sessionStorage.getItem("orderInfo"));
-// console.log(orderInfo,'value in orderInfo')
+
 
   const dispatch = useDispatch();
  const navigate=useNavigate()
@@ -89,6 +90,10 @@ if(data.success===false){
 }
 if(data.success){
   dispatch(orderActions.CREATE_ORDER_SUCCESS(data))
+
+  localStorage.removeItem("cartItems");
+  dispatch(cartItemsAction.REMOVE_ALLSHIPPING_INFO())
+  dispatch(cartItemsAction.REMOVE_ALLCART_ITEM())
   toast.success(data.message)
   navigate("/success");
 
@@ -117,7 +122,7 @@ dispatch(orderActions.CREATE_ORDER_FAIL(error.message))
         body:JSON.stringify(paymentData),
       });
       const data=await res.json()
-      console.log(data,'value in Data')
+   
       const client_secret = data.client_secret;
 
       if (!stripe || !elements) return;
@@ -153,6 +158,7 @@ dispatch(orderActions.CREATE_ORDER_FAIL(error.message))
 
      
         createOrder(order)
+
 
     
         } else {
